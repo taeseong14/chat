@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id="content">
+        <form id="nickForm">
+            <input type="text" autofocus placeholder="write nick">
+            <button>send msg</button>
+        </form>
+        <form id="msgForm">
+            <input type="text" placeholder="write msg">
+            <button>send msg</button>
+        </form>
+        <div id="messages"></div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>
