@@ -4,7 +4,9 @@
   "description": "바불챗",
   "main": "server.js",
   "dependencies": {
+    "axios": "^0.26.1",
     "express": "^4.17.3",
+    "nodemailer": "^6.7.3",
     "socket.io": "^4.4.1"
   }
 }

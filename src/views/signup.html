@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="content">
+        <div>sign up</div>
+        <div>
+            <input id="email" required type="text" placeholder="email">
+            <button type="button" id="sendmail">이메일 인증</button>
+        </div>
+        <div id="code"><input id="code" required type="text" placeholder="code 6" minlength="6" maxlength="6"></div>
+        <div><input id="password" autocomplete="false" required type="text" placeholder="password"></div>
+        <div>
+            <input id="password2" autocomplete="false" required type="text" placeholder="password 재입력">
+            <div id="pw-incorrect">password not match</div>
+        </div>
+        <div><input id="username" required type="text" placeholder="username"></div>
+        <button type="button">만들기</button>
+        <div>have a account? <a href="/signin">sign in</a></div>
+    </div>
+    <script src="/js/post.js"></script>
+    <script src="/js/signup.js"></script>
+</body>
+</html>
