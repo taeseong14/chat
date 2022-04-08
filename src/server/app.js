@@ -1,3 +1,5 @@
+const __path = __dirname.split("\\").slice(0, -1).join("\\");
+
 const express = require('express');
 const { mail } = require('../config/email');
 const mailConfirm = {};
@@ -7,16 +9,15 @@ const app = express();
 
 app.use(express.json());
 
-app.use(express.static(__dirname));
-app.use('/node_modules', express.static(__dirname.split('\\').slice(0, -1).join('\\') + '\\node_modules'));
-app.get('/', (req, res) => res.sendFile(__dirname + '/views/index.html'));
+app.use(express.static(__path));
+app.get('/', (req, res) => res.sendFile(__path + '/views/index.html'));
 
-app.get('/signup', (req, res) => res.sendFile(__dirname + '/views/signup.html'));
+app.get('/signup', (req, res) => res.sendFile(__path + '/views/signup.html'));
 app.post('/send-mail', (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).send({error: true, message: 'Please enter your email'});
     mail.sendMail({
-        from: `babpool <${mail.auth.user}>`,
+        from: `babpool <${mail.options.auth.user}>`,
         to: `new member <${email}>`,
         subject: 'bpchat signup',
         html: `[${new Date().getHours()}:${new Date().getMinutes()}]\nplease enter this code to signup: <b>${mailConfirm.code = Math.floor(Math.random() * 900000 + 100000)}</b>`
@@ -39,7 +40,7 @@ app.post('/create-account', (req, res) => {
     });
 });
 
-app.get('/signin', (req, res) => res.sendFile(__dirname + '/views/signin.html'));
+app.get('/signin', (req, res) => res.sendFile(__path + '/views/signin.html'));
 
 
 module.exports = app;
