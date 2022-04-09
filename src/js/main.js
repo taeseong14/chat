@@ -1,17 +1,21 @@
 const socket = io();
 
-const addChat = (message, sender, type) => {
+const msgList = document.querySelector('#messages');
+
+const addChat = (message) => {
+    console.log(JSON.stringify(message, null, 4));
     const p = document.createElement('p');
     p.textContent = (function(){
-        switch(type) {
+        switch(message.type) {
             case 0:
-            return `[${message}]`;
+            return `[${message.message}]`;
             
             case undefined: case null: case 1:
-            return `${sender || '너님'}: ${message}`;
+            return `${message.nick || '너님'}: ${message.message}`;
         }
     })();
-    document.querySelector('#messages').appendChild(p);
+    msgList.appendChild(p);
+    msgList.scrollTop = msgList.scrollHeight;
 }
 
 
@@ -21,8 +25,11 @@ const msgForm = document.querySelector('form#msgForm');
 const lastNick = localStorage.getItem('nickname');
 if (lastNick !== null) { 
     socket.emit('nickname', lastNick);
+    socket.emit('chat', `${lastNick}님이 입장하였습니다.`, 0);
     nickForm.hidden = true;
     msgForm[0].focus();
+} else {
+    socket.emit('chat', '누군가가 입장하였어여', 0);
 }
 
 nickForm.addEventListener('submit', (e) => {
@@ -45,7 +52,9 @@ msgForm.addEventListener('submit', (e) => {
     const message = input.value;
     if (!message) return;
     socket.emit('chat', message);
-    addChat(message);
+    addChat({
+        message: message
+    });
     input.value = '';
     input.focus();
 });
@@ -64,9 +73,10 @@ socket.on('disconnect', () => {
 
 post('/previous-messages')
 .then(arr => {
-    arr.length && addChat('이전 메시지 복원댐', null, 0);
+    arr.length && addChat({ type: 0, message: '이전 메시지 복원댐' });
     arr.forEach(message => {
-        addChat(message.message, message.nick)
+        addChat({ message: message.message, nick: message.nick === lastNick ? '너님' : message.nick });
     });
-    addChat('입장하였어여', null, 0);
+    addChat({ type: 0, message: '입장하였어여.' });
+    msgList.scrollTop = 0;
 });

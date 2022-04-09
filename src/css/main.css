@@ -1,0 +1,17 @@
+#account {
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-align: right;
+}
+
+#content #msgForm {
+    position: absolute;
+    bottom: 30px;
+    text-align: center;
+}
+
+#content #messages {
+    max-height: 400px;
+    overflow-y: scroll;
+}
