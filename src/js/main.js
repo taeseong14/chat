@@ -1,7 +1,19 @@
 const socket = io();
 
-post('/previous-messages')
-.then(arr => arr.forEach(message => addChat(message)));
+const addChat = (message, sender, type) => {
+    const p = document.createElement('p');
+    p.textContent = (function(){
+        switch(type) {
+            case 0:
+            return `[${message}]`;
+            
+            case undefined: case null: case 1:
+            return `${sender || '너님'}: ${message}`;
+        }
+    })();
+    document.querySelector('#messages').appendChild(p);
+}
+
 
 const nickForm = document.querySelector('form#nickForm');
 const msgForm = document.querySelector('form#msgForm');
@@ -26,11 +38,6 @@ nickForm.addEventListener('submit', (e) => {
 });
 
 
-const addChat = (message, sender) => {
-    const p = document.createElement('p');
-    p.textContent = `${sender || '너님'}: ${message}`;
-    document.querySelector('#messages').appendChild(p);
-}
 
 msgForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -38,7 +45,7 @@ msgForm.addEventListener('submit', (e) => {
     const message = input.value;
     if (!message) return;
     socket.emit('chat', message);
-    addChat(message, null);
+    addChat(message);
     input.value = '';
     input.focus();
 });
@@ -54,3 +61,12 @@ socket.on('disconnect', () => {
     document.title = 'Reloading...';
     location.reload();
 })
+
+post('/previous-messages')
+.then(arr => {
+    arr.length && addChat('이전 메시지 복원댐', null, 0);
+    arr.forEach(message => {
+        addChat(message.message, message.nick)
+    });
+    addChat('입장하였어여', null, 0);
+});
