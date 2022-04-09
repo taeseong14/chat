@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json());
 
 app.use(express.static(__path));
-app.get('/', (req, res) => res.sendFile(__path + '/views/index.html'));
+app.get('/', (req, res) => res.sendFile(__path + '/views/main.html'));
 
 app.get('/signup', (req, res) => res.sendFile(__path + '/views/signup.html'));
 app.post('/send-mail', (req, res) => {

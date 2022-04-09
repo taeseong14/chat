@@ -1,7 +1,7 @@
 const socket = io();
 
-
-
+post('/previous-messages')
+.then(arr => arr.forEach(message => addChat(message)));
 
 const nickForm = document.querySelector('form#nickForm');
 const msgForm = document.querySelector('form#msgForm');
