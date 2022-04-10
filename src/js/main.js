@@ -85,6 +85,9 @@ socket.on('disconnect', () => {
     location.reload();
 })
 
+
+//get previous messages
+
 post('/previous-messages')
 .then(arr => {
     arr.length && addChat({ type: 0, message: '이전 메시지 복원댐' });

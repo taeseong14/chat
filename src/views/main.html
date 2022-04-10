@@ -8,19 +8,17 @@
     <title>Document</title>
 </head>
 <body>
-    <div id="account">
-        <a href="/signin">sign in</a>
-    </div>
+    <a href="/signin">sign in</a>
     <div id="content">
         <form id="nickForm">
             <input type="text" autofocus placeholder="write nick">
             <button>send msg</button>
         </form>
+        <div id="messages"></div>
         <form id="msgForm">
             <textarea type="text" ></textarea>
             <button>전송</button>
         </form>
-        <div id="messages"></div>
     </div>
     
     <script src="/socket.io/socket.io.js"></script>

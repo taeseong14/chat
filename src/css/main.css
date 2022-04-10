@@ -1,17 +1,20 @@
+html, body {
+    width: 100vw !important;
+}
+
 body {
     background-color: #f5f5f5;
 }
 
-#account {
+body > a {
     position: absolute;
-    top: 0;
-    right: 0;
+    width: 100px;
+    top: 10px;
+    right: 10px;
     text-align: right;
 }
 
 #content #msgForm {
-    width: 100%;
-    position: absolute;
     bottom: 30px;
     text-align: center;
 }
