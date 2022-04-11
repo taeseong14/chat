@@ -1,4 +1,3 @@
-const { clear } = require('console');
 const http = require('http');
 const socketio = require('socket.io');
 const app = require('./app');
