@@ -1,12 +1,14 @@
 const socket = io();
 
+const emojiList = ["내"]
+
 const msgList = document.querySelector('#messages');
 
 const addChat = (message) => {
     console.log('msg', `[${message.type}] ${message.nick}: ${message.message}`);
     const div = document.createElement('div');
     const p = document.createElement('p');
-    p.textContent = (function(){
+    p.innerText = (function(){
         switch(message.type) {
             case 0:
             div.classList.add('system');
@@ -18,6 +20,15 @@ const addChat = (message) => {
             return `${nick?nick+': ':''}${message.message}`;
         }
     })();
+    p.innerHTML = p.innerHTML.replace(/\([가-힣]{1,2}\)/g, m => {
+        const emoji = m.slice(1, -1);
+        if (emojiList.includes(emoji)) {
+            return `<img src=/views/imgs/emoji/${emoji}.png>`;
+        } else {
+            return m;
+        }
+    });
+    
     div.appendChild(p);
     msgList.appendChild(div);
     msgList.scrollTop = msgList.scrollHeight;
@@ -52,7 +63,6 @@ nickForm.addEventListener('submit', (e) => {
 const txtarea = msgForm[0];
 const sendButton = msgForm[1];
 sendButton.style.color = '#E2C23D';
-
 function sendMessageEvent(e) {
     e.preventDefault();
     const message = txtarea.value;
@@ -96,4 +106,39 @@ post('/previous-messages')
     });
     addChat({ type: 0, message: '입장하셨어여.' });
     msgList.scrollTop = 0;
+});
+
+
+//google login
+
+const googleLoginBtn = document.querySelector('div.g-signin2');
+const profileImg = document.querySelector('img');
+profileImg.hidden = true;
+const profileMenu = document.querySelector('#profile-menu');
+profileMenu.hidden = true;
+
+function onSignIn(googleUser) {
+    var profile = googleUser.getBasicProfile();
+    var pfUrl = profile.getImageUrl();
+    console.log('Name:', profile.getName(), '\nImage URL:', pfUrl);
+    profileImg.src = pfUrl;
+    localStorage.setItem('profileImg', pfUrl);
+    socket.emit('profileImg', pfUrl);
+    profileImg.hidden = false;
+    googleLoginBtn.hidden = true;
+}
+
+function signOut() {
+    var auth2 = gapi.auth2.getAuthInstance();
+    auth2.signOut().then(function () {
+        console.log('User signed out.');
+        googleLoginBtn.hidden = false;
+    });
+}
+
+profileImg.addEventListener('mouseover', () => {
+    profileMenu.hidden = false;
+});
+profileImg.addEventListener('mouseout', () => {
+    setTimeout(()=>profileMenu.hidden = true, 2000);
 });

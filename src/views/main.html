@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="303578995366-k5s7056t1094rev0jh5ctb3s4cvptbhh.apps.googleusercontent.com">
     <link rel="stylesheet" href="/css/main.css">
     <title>Document</title>
 </head>
 <body>
-    <a href="/signin">sign in</a>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    <div id="profile">
+        <img id="profile-image" src="data:mollu">
+        <div id="profile-menu">
+            <a id="signOut" href="#" onclick="signOut();">Sign out</a>
+        </div>
+    </div>
     <div id="content">
         <form id="nickForm">
             <input type="text" autofocus placeholder="write nick">
@@ -16,7 +24,7 @@
         </form>
         <div id="messages"></div>
         <form id="msgForm">
-            <textarea type="text" ></textarea>
+            <textarea type="text"></textarea>
             <button>전송</button>
         </form>
     </div>

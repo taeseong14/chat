@@ -28,6 +28,7 @@ io.on('connection', (socket) => {
     socket.on('nickname', nickname => {
         socket.nick = nickname;
     });
+    socket.on('profileImg', url => socket.profileImg = url);
     socket.on('disconnect', () => {
         msgHistory.push({type: 0, message: `${socket.nick}님이 나갔습니다.`});
         socket.to('hello').emit('chat', { message: `${socket.nick}님이 나갔습니다.`, type: 0});
