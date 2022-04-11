@@ -174,10 +174,6 @@ post('/previous-messages')
 //google login
 
 const googleLoginBtn = document.querySelector('div.g-signin2');
-// const profileImg = document.querySelector('img');
-// profileImg.hidden = true;
-// const profileMenu = document.querySelector('#profile-menu');
-// profileMenu.hidden = true;
 const myProfile = document.querySelector('#my-profile');
 const myProfileImg = myProfile.querySelector('img');
 const myName = myProfile.querySelector('span');
@@ -187,10 +183,8 @@ function onSignIn(googleUser) {
     var pfUrl = profile.getImageUrl();
     console.log('Name:', profile.getName(), '\nImage URL:', pfUrl);
     myName.innerText = profile.getName();
-    // profileImg.src = pfUrl;
     myProfileImg.src = pfUrl;
     socket.emit('profileImg', pfUrl);
-    // profileImg.hidden = false;
     googleLoginBtn.hidden = true;
 }
 
@@ -202,22 +196,13 @@ function signOut() {
     });
 }
 
-// profileImg.addEventListener('mouseover', () => {
-//     profileMenu.hidden = false;
-// });
-// profileImg.addEventListener('mouseout', () => {
-//     setTimeout(()=>profileMenu.hidden = true, 2000);
-// });
-
 myProfileImg.addEventListener('click', () => {
     open('/profile');
 })
 
-
-
-if (localStorage.getItem('id')) {
-    socket.emit('id', localStorage.getItem('id'));
-}
+// if (localStorage.getItem('id')) {
+//     socket.emit('id', localStorage.getItem('id'));
+// }
 
 
 
