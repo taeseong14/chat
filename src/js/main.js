@@ -1,6 +1,6 @@
 const socket = io();
 
-const emojiList = ["내"]
+const emojiList = ["내", "앱"]
 
 const msgList = document.querySelector('#messages');
 
@@ -28,6 +28,9 @@ const addChat = (message) => {
             return m;
         }
     });
+
+    if (!p.innerHTML.replace(/<img src=.*>/g, '').trim()) p.classList.add('only-emoji');
+
     
     div.appendChild(p);
     msgList.appendChild(div);

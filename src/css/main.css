@@ -75,7 +75,18 @@ body {
     background-color: #fff;
 }
 
-
+#messages div p img {
+    width: 20px;
+    height: 20px;
+}
+.only-emoji {
+    background-color: #B2C7D9 !important;
+    padding: 0 !important;
+}
+.only-emoji img {
+    width: 100px !important;
+    height: 100px !important;
+}
 
 
 .hidden {
