@@ -1,8 +1,36 @@
 const socket = io();
 
-const emojiList = ["내", "앱"]
+const emojiList = ["내", "앱", "앱2"];
+
+
+// 칭구 / 챗 화면 전환
+
+const friendTab = document.querySelector('#friend-tab');
+const chatTab = document.querySelector('#chat-tab');
+friendTab.hidden = true;
+
+const menu = document.querySelector('#menu');
+const friendBtn = menu.querySelector('#friend img');
+const chatBtn = menu.querySelector('#chat img');
+
+friendBtn.addEventListener('click', () => {
+    friendBtn.src = '/views/imgs/friend-focus.png';
+    chatBtn.src = '/views/imgs/chat.png';
+    chatTab.hidden = true;
+    friendTab.hidden = false;
+});
+chatBtn.addEventListener('click', () => {
+    friendBtn.src = '/views/imgs/friend.png';
+    chatBtn.src = '/views/imgs/chat-focus.png';
+    chatTab.hidden = false;
+    friendTab.hidden = true;
+});
+
+
+// 채팅관련?
 
 const msgList = document.querySelector('#messages');
+const viewMsgList = chatTab.querySelector('#view-messages');
 
 const addChat = (message) => {
     console.log('msg', `[${message.type}] ${message.nick}: ${message.message}`);
@@ -20,7 +48,7 @@ const addChat = (message) => {
             return `${nick?nick+': ':''}${message.message}`;
         }
     })();
-    p.innerHTML = p.innerHTML.replace(/\([가-힣]{1,2}\)/g, m => {
+    p.innerHTML = p.innerHTML.replace(/\([가-힣0-9]{1,2}\)/g, m => {
         const emoji = m.slice(1, -1);
         if (emojiList.includes(emoji)) {
             return `<img src=/views/imgs/emoji/${emoji}.png>`;
@@ -29,12 +57,12 @@ const addChat = (message) => {
         }
     });
 
-    if (!p.innerHTML.replace(/<img src=.*>/g, '').trim()) p.classList.add('only-emoji');
+    if (!p.innerHTML.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
 
     
     div.appendChild(p);
     msgList.appendChild(div);
-    msgList.scrollTop = msgList.scrollHeight;
+    viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
 
 
@@ -66,6 +94,7 @@ nickForm.addEventListener('submit', (e) => {
 const txtarea = msgForm[0];
 const sendButton = msgForm[1];
 sendButton.style.color = '#E2C23D';
+sendButton.style.cursor = 'not-allowed';
 function sendMessageEvent(e) {
     e.preventDefault();
     const message = txtarea.value;
@@ -84,7 +113,11 @@ txtarea.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey && txtarea.value.trim()) {
         sendMessageEvent(e);
     }
-    setTimeout(()=>sendButton.style.color = txtarea.value.trim()? '#0E0E0E' : '#E2C23D');
+    setTimeout(()=>{
+        sendButton.style.color = txtarea.value.trim()? '#0E0E0E' : '#E2C23D'
+        if (txtarea.value.trim()) sendButton.style.cursor = 'pointer';
+        else sendButton.style.cursor = 'not-allowed';
+    });
 });
 
 
@@ -119,12 +152,15 @@ const profileImg = document.querySelector('img');
 profileImg.hidden = true;
 const profileMenu = document.querySelector('#profile-menu');
 profileMenu.hidden = true;
+const myProfile = document.querySelector('#my-profile');
+const myProfileImg = myProfile.querySelector('img');
 
 function onSignIn(googleUser) {
     var profile = googleUser.getBasicProfile();
     var pfUrl = profile.getImageUrl();
     console.log('Name:', profile.getName(), '\nImage URL:', pfUrl);
     profileImg.src = pfUrl;
+    myProfileImg.src = pfUrl;
     localStorage.setItem('profileImg', pfUrl);
     socket.emit('profileImg', pfUrl);
     profileImg.hidden = false;
@@ -145,3 +181,4 @@ profileImg.addEventListener('mouseover', () => {
 profileImg.addEventListener('mouseout', () => {
     setTimeout(()=>profileMenu.hidden = true, 2000);
 });
+

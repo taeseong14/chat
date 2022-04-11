@@ -1,0 +1,46 @@
+#content #messages div {
+    width: 100%;
+    display: flex;
+}
+#content #messages div p {
+    /* width: 10%; */
+    border-radius: 5px;
+    padding: 5px;
+    margin: 2px 0;
+}
+
+.system {
+    text-align: center;
+    background-color: #A9BDCE;
+    margin: 2px 0;
+}
+.system p {
+    padding: 0 !important;
+    width: 100%;
+}
+.msg-self {
+    justify-content: flex-end;
+}
+.msg-self p {
+    background-color: #FFEB33;
+}
+.msg-other {
+    justify-content: flex-start;
+}
+.msg-other p {
+    background-color: #fff;
+}
+
+#messages div p img {
+    width: 20px;
+    height: 20px;
+}
+.only-emoji {
+    background-color: #B2C7D9 !important;
+    padding: 0 !important;
+}
+.only-emoji img {
+    width: 100px !important;
+    height: 100px !important;
+}
+

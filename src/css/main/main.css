@@ -1,0 +1,115 @@
+body {
+    background-color: #aaa;
+}
+
+#profile, .g-signin2 {
+    position: absolute;
+    width: 100px;
+    top: 10px;
+    right: 10px;
+    text-align: right;
+}
+.g-signin2 {
+    right: 30px;
+}
+#profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+#profile img:-moz-loading {
+    display: none;
+}
+
+#content #msgForm {
+    bottom: 30px;
+    text-align: center;
+}
+
+
+#chatScreen {
+    display: flex;
+    width: 400px;
+    height: 500px;
+    margin: 100px auto 0 auto;
+    border-radius: 20px;
+}
+
+#tabs {
+    width: 83%;
+    height: 100%;
+}
+
+#chatScreen #menu {
+    width: 17%;
+    background-color: #ececec;
+}
+#menu #friend, #menu #chat {
+    margin-top: 30px;
+    text-align: center;
+}
+#friend img, #chat img {
+    cursor: pointer;
+}
+
+#tabs #chat-tab {
+    background-color: #B2C7D9;
+    height: 100%;
+}
+#tabs #chat-tab > div {
+    height: 80%;
+    overflow-y: scroll;
+}
+#tabs #chat-tab > div > div {
+    padding:10px;
+}
+
+#chat-tab #msgForm {
+    background-color: #fff;
+    height: 20%;
+    display: flex;
+}
+
+#msgForm #div-txt {
+    width: 80%;
+}
+#msgForm textarea {
+    border: none;
+    width: 90%;
+    height: 80%;
+    margin: 5px auto;
+    resize: none;
+    font-size: 14px;
+    font-family: sans-serif;
+}
+#msgForm textarea:focus {
+    outline: none;
+}
+#msgForm #div-btn {
+    width: 20%;
+}
+#msgForm button {
+    border: none;
+    width: 50px;
+    height: 30px;
+    margin-top: 15px;
+    background-color: #FFEC42;
+}
+
+
+
+#tabs #friend-tab {
+    background-color: #fff;
+    height: 100%;
+}
+#friend-tab #friend-tab-text {
+    padding: 10px;
+}
+
+
+
+
+
+.hidden {
+    display: none;
+}

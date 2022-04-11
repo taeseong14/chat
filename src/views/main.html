@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="303578995366-k5s7056t1094rev0jh5ctb3s4cvptbhh.apps.googleusercontent.com">
-    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/main/main.css">
+    <link rel="stylesheet" href="/css/main/chat.css">
     <title>Document</title>
 </head>
 <body>
@@ -22,11 +23,45 @@
             <input type="text" autofocus placeholder="write nick">
             <button>send msg</button>
         </form>
-        <div id="messages"></div>
-        <form id="msgForm">
-            <textarea type="text"></textarea>
-            <button>전송</button>
-        </form>
+        <div id="chatScreen">
+            <div id="menu">
+                <div id="friend">
+                    <img src="/views/imgs/friend.png">
+                </div>
+                <div id="chat">
+                    <img src="/views/imgs/chat-focus.png">
+                </div>
+            </div>
+            <div id="tabs">
+                <div id="friend-tab">
+                    <div id="friend-tab-text">칭구</div>
+                    <div>
+                        <div id="my-profile">
+                            <img src="data:mollu">
+                            너님
+                        </div>
+                        <div id="view-friend">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div id="chat-tab">
+                    <div id="view-messages">
+                        <div>
+                            <div id="messages"></div>
+                        </div>
+                    </div>
+                    <form id="msgForm">
+                        <div id="div-txt">
+                            <textarea type="text"></textarea>
+                        </div>
+                        <div id="div-btn">
+                            <button>전송</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script src="/socket.io/socket.io.js"></script>
