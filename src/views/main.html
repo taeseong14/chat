@@ -12,12 +12,12 @@
 </head>
 <body>
     <div class="g-signin2" data-onsuccess="onSignIn"></div>
-    <div id="profile">
+    <!-- <div id="profile">
         <img id="profile-image" src="data:mollu">
         <div id="profile-menu">
             <a id="signOut" href="#" onclick="signOut();">Sign out</a>
         </div>
-    </div>
+    </div> -->
     <div id="content">
         <form id="nickForm">
             <input type="text" autofocus placeholder="write nick">
@@ -38,10 +38,15 @@
                     <div>
                         <div id="my-profile">
                             <img src="data:mollu">
-                            너님
+                            <div>
+                                <span id="my-name"></span>
+                            </div>
                         </div>
                         <div id="view-friend">
-                            
+                            <span id="friend-len">친구 <span></span></span>
+                            <div id="friend-list">
+                                
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -61,6 +66,15 @@
                     </form>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="context-menu">
+        <div id="copy" class="item">
+            복사
+        </div>
+        <div id="del" class="item">
+            삭제
         </div>
     </div>
     

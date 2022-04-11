@@ -31,9 +31,10 @@ chatBtn.addEventListener('click', () => {
 
 const msgList = document.querySelector('#messages');
 const viewMsgList = chatTab.querySelector('#view-messages');
+let lastMsgTime = 0;
 
 const addChat = (message) => {
-    console.log('msg', `[${message.type}] ${message.nick}: ${message.message}`);
+    console.log('msg', `[${message.type}] ${message.nick}: ${message.message} - ${message.timestamp}`);
     const div = document.createElement('div');
     const p = document.createElement('p');
     p.innerText = (function(){
@@ -56,11 +57,35 @@ const addChat = (message) => {
             return m;
         }
     });
-
-    if (!p.innerHTML.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
-
     
-    div.appendChild(p);
+    if (!p.innerHTML.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
+    
+    if (message.type === 1) { //add timestamp
+        const parentSpan = document.createElement('span');
+        const span = document.createElement('span');
+        const time = new Date(message.timestamp);
+        span.innerText = `${time.getHours()}:${time.getMinutes()}`;
+        parentSpan.appendChild(span);
+        if (message.nick) {
+            div.appendChild(p);
+            div.appendChild(parentSpan);
+        } else {
+            div.appendChild(parentSpan);
+            div.appendChild(p);
+        }
+    } else div.appendChild(p);
+
+    // add context menu
+    p.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        console.log(e);
+        const contextElement = document.getElementById("context-menu");
+        contextElement.style.top = e.offsetY + "px";
+        contextElement.style.left = e.offsetX + "px";
+        contextElement.classList.add('active');
+    });
+    
+
     msgList.appendChild(div);
     viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
@@ -99,10 +124,11 @@ function sendMessageEvent(e) {
     e.preventDefault();
     const message = txtarea.value;
     if (!message) return;
-    socket.emit('chat', message);
+    socket.emit('chat', message, 1, Date.now());
     addChat({
         type: 1,
-        message: message
+        message: message,
+        timestamp: Date.now()
     });
     txtarea.value = '';
 }
@@ -138,7 +164,7 @@ post('/previous-messages')
 .then(arr => {
     arr.length && addChat({ type: 0, message: '이전 메시지 복원댐' });
     arr.forEach(message => {
-        addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? '' : message.nick });
+        addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? '' : message.nick, timestamp: message.timestamp });
     });
     addChat({ type: 0, message: '입장하셨어여.' });
     msgList.scrollTop = 0;
@@ -148,22 +174,23 @@ post('/previous-messages')
 //google login
 
 const googleLoginBtn = document.querySelector('div.g-signin2');
-const profileImg = document.querySelector('img');
-profileImg.hidden = true;
-const profileMenu = document.querySelector('#profile-menu');
-profileMenu.hidden = true;
+// const profileImg = document.querySelector('img');
+// profileImg.hidden = true;
+// const profileMenu = document.querySelector('#profile-menu');
+// profileMenu.hidden = true;
 const myProfile = document.querySelector('#my-profile');
 const myProfileImg = myProfile.querySelector('img');
+const myName = myProfile.querySelector('span');
 
 function onSignIn(googleUser) {
     var profile = googleUser.getBasicProfile();
     var pfUrl = profile.getImageUrl();
     console.log('Name:', profile.getName(), '\nImage URL:', pfUrl);
-    profileImg.src = pfUrl;
+    myName.innerText = profile.getName();
+    // profileImg.src = pfUrl;
     myProfileImg.src = pfUrl;
-    localStorage.setItem('profileImg', pfUrl);
     socket.emit('profileImg', pfUrl);
-    profileImg.hidden = false;
+    // profileImg.hidden = false;
     googleLoginBtn.hidden = true;
 }
 
@@ -175,10 +202,32 @@ function signOut() {
     });
 }
 
-profileImg.addEventListener('mouseover', () => {
-    profileMenu.hidden = false;
-});
-profileImg.addEventListener('mouseout', () => {
-    setTimeout(()=>profileMenu.hidden = true, 2000);
+// profileImg.addEventListener('mouseover', () => {
+//     profileMenu.hidden = false;
+// });
+// profileImg.addEventListener('mouseout', () => {
+//     setTimeout(()=>profileMenu.hidden = true, 2000);
+// });
+
+myProfileImg.addEventListener('click', () => {
+    open('/profile');
+})
+
+
+
+if (localStorage.getItem('id')) {
+    socket.emit('id', localStorage.getItem('id'));
+}
+
+
+
+// context menu
+
+window.addEventListener("click", () => {
+    const contextElement = document.getElementById("context-menu");
+    contextElement.classList.remove('active');
 });
 
+document.querySelector('#wa').addEventListener('click', () => {
+    console.log('wa')
+});

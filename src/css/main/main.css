@@ -50,6 +50,8 @@ body {
 }
 #friend img, #chat img {
     cursor: pointer;
+    width: 25px;
+    height: 25px;
 }
 
 #tabs #chat-tab {
@@ -106,10 +108,43 @@ body {
     padding: 10px;
 }
 
-
-
+#friend-tab #my-profile {
+    display: flex;
+}
+#my-profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 30%;
+    cursor: pointer;
+}
+#my-profile > div {
+    padding: 10px;
+    width: 100%;
+}
 
 
 .hidden {
     display: none;
+}
+
+
+#context-menu {
+    position: fixed;
+    z-index: 10000;
+    width: 150px;
+    background-color: #aaa;
+    transform: scale(0);
+    transform-origin: top left;
+}
+#context-menu.active {
+    transform: scale(1);
+    transition: transform 200ms ease-in-out;
+}
+#context-menu .item {
+    padding: 8px 10px;
+    font-size: 15px;
+    color: #000;
+}
+#context-menu .item:hover {
+    background-color: #555
 }
