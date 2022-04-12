@@ -264,3 +264,9 @@ emojiBtn.addEventListener('click', () => {
     txtarea.value += emojiList.map(e => `(${e})`).join(' ');
     checkSendable({});
 });
+
+
+
+
+
+friendBtn.click();

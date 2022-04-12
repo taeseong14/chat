@@ -1,0 +1,22 @@
+
+#tabs #friend-tab {
+    background-color: #fff;
+    height: 100%;
+}
+#friend-tab #friend-tab-text {
+    padding: 10px;
+}
+
+#friend-tab #my-profile {
+    display: flex;
+}
+#my-profile img {
+    width: 50px;
+    height: 50px;
+    border-radius: 30%;
+    cursor: pointer;
+}
+#my-profile > div {
+    padding: 10px;
+    width: 100%;
+}
