@@ -36,20 +36,38 @@
             </div>
             <div id="tabs">
                 <div id="friend-tab">
-                    <div id="friend-tab-text">칭구</div>
+                    <div id="friend-tab-text">
+                        칭구
+                        <div id="friend-icons">
+                            <img id="search-friend" src="/views/imgs/search-friend.png">
+                            <img id="add-friend" src="/views/imgs/add-friend.png">
+                        </div>
+                    </div>
                     <div>
                         <div id="my-profile">
                             <img>
                             <div>
                                 <span id="my-name"></span>
+                                <span id="my-id"></span>
                             </div>
                         </div>
                         <div id="view-friend">
-                            <span id="friend-len">친구 <span></span></span>
+                            <span id="friend-len">친구 <span>0</span></span>
                             <div id="friend-list">
                                 
                             </div>
                         </div>
+                    </div>
+                    <div id="add-friend-tab" class="hidden">
+                        <div id="add-friend-tab-title">
+                            <span>칭구 추가</span>
+                            <span>x</span>
+                        </div>
+                        <form>
+                            <input type="text" placeholder="id 입력">
+                            <button>검색</button>
+                        </form>
+                        <div id="search-result"></div>
                     </div>
                 </div>
                 <div id="chat-tab">

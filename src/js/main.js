@@ -169,8 +169,9 @@ const checkSendable = (e) => {
         txtarea.focus()
         return;
     }
-    if (e.key === 'Enter' && !e.shiftKey && txtarea.value.trim()) {
-        sendMessageEvent(e);
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (txtarea.value.trim()) sendMessageEvent(e);
     }
     setTimeout(()=>{
         sendButton.style.color = txtarea.value.trim()? '#0E0E0E' : '#E2C23D'
@@ -212,7 +213,7 @@ post('/previous-messages')
 const googleLoginBtn = document.querySelector('div.g-signin2');
 const myProfile = document.querySelector('#my-profile');
 const myProfileImg = myProfile.querySelector('img');
-const myName = myProfile.querySelector('span');
+const myName = myProfile.querySelector('#my-name');
 
 function onSignIn(googleUser) {
     var profile = googleUser.getBasicProfile();
@@ -239,9 +240,21 @@ myProfileImg.addEventListener('click', () => {
     open('/profile');
 })
 
-// if (localStorage.getItem('id')) {
-//     socket.emit('id', localStorage.getItem('id'));
-// }
+
+// id
+
+const myId = myProfile.querySelector('#my-id');
+
+if (localStorage.getItem('id')) {
+    socket.emit('setId', localStorage.getItem('id'));
+    myId.innerText = '#' + localStorage.getItem('id');
+} else {
+    socket.emit('getId');
+    socket.on('getId', id => {
+        localStorage.setItem('id', id);
+        myId.innerText = '#' + id;
+    });
+}
 
 
 
@@ -269,4 +282,39 @@ emojiBtn.addEventListener('click', () => {
 
 
 
+
+const searchFriendBtn = document.querySelector('#search-friend');
+const addFriendBtn = document.querySelector('#add-friend');
+const addFriendTab = document.querySelector('#add-friend-tab');
+
+addFriendBtn.addEventListener('click', () => {
+    addFriendTab.classList.remove('hidden');
+});
+
+const addFriend_searchForm = addFriendTab.querySelector('form');
+addFriend_searchForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const searchInput = addFriend_searchForm.querySelector('input');
+    const search = searchInput.value;
+    if (!search) return;
+    socket.emit('searchFriend', search);
+});
+socket.on('searchFriend', (result) => {
+    const searchResult = addFriendTab.querySelector('#search-result');
+    searchResult.innerHTML = '';
+    result.forEach(user => {
+        const userCard = document.createElement('div');
+        userCard.classList.add('user-card');
+        userCard.innerHTML = `
+        <img src="${user.profileImg}" alt="">
+        <div id="user-card-info-text">
+            <span id="user-card-name">${user.nick}</span>
+            <span id="user-card-id">#${user.id}</span>
+        </div>
+        `;
+        searchResult.appendChild(userCard);
+    });
+});
+
 friendBtn.click();
+addFriendBtn.click();
