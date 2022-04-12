@@ -2,7 +2,7 @@ const nick = localStorage.getItem('nickname');
 const profileImg = localStorage.getItem('profileImg');
 const id = localStorage.getItem('id');
 
-if (!nick && !profileImg && !id) {
+if (!(nick && profileImg && id)) {
     alert('로그인을 먼저 해주세요.');
     location.href = '/';
 }

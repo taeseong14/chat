@@ -103,6 +103,7 @@
 #search-result .user-card {
     padding: 5px 15px 5px 15px;
     display: flex;
+    justify-content: space-between;
 }
 .user-card img {
     width: 30px;
@@ -111,8 +112,22 @@
 }
 .user-card #user-card-info-text {
     margin-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }
 .user-card #user-card-id {
     color: #555;
     font-size: 12px;
+}
+.user-card #user-card-info-text div:last-child {
+    display: flex;
+    align-items: center;
+}
+.user-card button {
+    font-size: 20px;
+    padding: 0;
+    width: 25px;
+    height: 25px;
+    text-align: center;
 }
