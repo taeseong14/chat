@@ -1,7 +1,6 @@
 const socket = io();
 
-let emojiList = [];
-post('/emoji-list').then(arr => emojiList = arr);
+let emojiList = []; // get emoji list before get previous messages
 
 
 // 칭구 / 챗 화면 전환
@@ -32,10 +31,13 @@ chatBtn.addEventListener('click', () => {
 
 const msgList = document.querySelector('#messages');
 const viewMsgList = chatTab.querySelector('#view-messages');
-let lastMsgTime = 0;
+let lastMsgTime = '';
+
+let lastMsg;
 
 const addChat = (message) => {
     console.log('msg', `[${message.type}] ${message.nick}: ${message.message} - ${message.timestamp}`);
+    const time = new Date(message.timestamp);
     const div = document.createElement('div');
     const p = document.createElement('p');
     p.innerText = (function(){
@@ -50,6 +52,11 @@ const addChat = (message) => {
             return `${nick?nick+': ':''}${message.message}`;
         }
     })();
+    
+    // 링크 하이라이트
+    p.innerHTML = p.innerHTML.replace(/(https?:(\/\/)?)?[a-zA-Z0-9가-힣\.\-]+\.[a-zA-Z0-9가-힣]{2,}(\/[a-zA-Z0-9가-힣\.\/]+)?/g, e => `<a href="${e.startsWith("http")?e:"//"+e}">${e}</a>`);
+    
+    // 이모지 표현
     p.innerHTML = p.innerHTML.replace(/\([가-힣0-9]{1,2}\)/g, m => {
         const emoji = m.slice(1, -1);
         if (emojiList.includes(emoji)) {
@@ -61,11 +68,13 @@ const addChat = (message) => {
     
     if (!p.innerHTML.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
     
-    if (message.type === 1) { //add timestamp
+    const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
+    
+    if (message.type === 1 && timeFormat !== lastMsgTime) { //add timestamp
         const parentSpan = document.createElement('span');
         const span = document.createElement('span');
-        const time = new Date(message.timestamp);
-        span.innerText = `${time.getHours()}:${time.getMinutes()}`;
+        span.innerText = timeFormat;
+        lastMsgTime = timeFormat;
         parentSpan.appendChild(span);
         if (message.nick) {
             div.appendChild(p);
@@ -75,7 +84,7 @@ const addChat = (message) => {
             div.appendChild(p);
         }
     } else div.appendChild(p);
-
+    
     // add context menu
     p.addEventListener("contextmenu", (e) => {
         e.preventDefault();
@@ -86,7 +95,7 @@ const addChat = (message) => {
         contextElement.classList.add('active');
     });
     
-
+    
     msgList.appendChild(div);
     viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
@@ -123,8 +132,21 @@ sendButton.style.color = '#E2C23D';
 sendButton.style.cursor = 'not-allowed';
 function sendMessageEvent(e) {
     e.preventDefault();
-    const message = txtarea.value;
+    let message = txtarea.value;
     if (!message) return;
+
+    // 이스터에그(??)
+    message = message.replace(/^eval\: .*/, e => {
+        const code = e.replace(/eval\: /, '');
+        try {
+            var result = eval(code);
+        } catch (e) {
+            return `result:\n${e}`;
+        }
+        return `result:\n${result}`;
+    });
+    
+    
     socket.emit('chat', message, 1, Date.now());
     addChat({
         type: 1,
@@ -137,6 +159,14 @@ function sendMessageEvent(e) {
 msgForm.addEventListener('submit', sendMessageEvent);
 
 const checkSendable = (e) => {
+    if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        txtarea.value = lastMsg;
+        const msgLength = txtarea.value.length;
+        txtarea.setSelectionRange(msgLength, msgLength);
+        txtarea.focus()
+        return;
+    }
     if (e.key === 'Enter' && !e.shiftKey && txtarea.value.trim()) {
         sendMessageEvent(e);
     }
@@ -164,13 +194,14 @@ socket.on('disconnect', () => {
 //get previous messages
 
 post('/previous-messages')
-.then(arr => {
+.then(async arr => {
+    emojiList = await post('/emoji-list'); //get emoji list
     arr.length && addChat({ type: 0, message: '이전 메시지 복원댐' });
     arr.forEach(message => {
         addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? '' : message.nick, timestamp: message.timestamp });
     });
     addChat({ type: 0, message: '입장하셨어여.' });
-    msgList.scrollTop = 0;
+    viewMsgList.scrollTop = 0;
 });
 
 
