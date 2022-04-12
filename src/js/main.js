@@ -1,6 +1,7 @@
 const socket = io();
 
-const emojiList = ["내", "앱", "앱2"];
+let emojiList = [];
+post('/emoji-list').then(arr => emojiList = arr);
 
 
 // 칭구 / 챗 화면 전환
@@ -135,7 +136,7 @@ function sendMessageEvent(e) {
 
 msgForm.addEventListener('submit', sendMessageEvent);
 
-txtarea.addEventListener('keydown', (e) => {
+const checkSendable = (e) => {
     if (e.key === 'Enter' && !e.shiftKey && txtarea.value.trim()) {
         sendMessageEvent(e);
     }
@@ -144,7 +145,9 @@ txtarea.addEventListener('keydown', (e) => {
         if (txtarea.value.trim()) sendButton.style.cursor = 'pointer';
         else sendButton.style.cursor = 'not-allowed';
     });
-});
+}
+
+txtarea.addEventListener('keydown', checkSendable);
 
 
 
@@ -213,6 +216,15 @@ window.addEventListener("click", () => {
     contextElement.classList.remove('active');
 });
 
-document.querySelector('#wa').addEventListener('click', () => {
-    console.log('wa')
+// document.querySelector('#wa').addEventListener('click', () => {
+//     console.log('wa')
+// });
+
+
+// msgform menus
+
+const emojiBtn = msgForm.querySelector('#emoji');
+emojiBtn.addEventListener('click', () => {
+    txtarea.value += emojiList.map(e => `(${e})`).join(' ');
+    checkSendable({});
 });

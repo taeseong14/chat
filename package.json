@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.17.3",
+    "glob": "^8.0.1",
     "socket.io": "^4.4.1"
   }
 }
