@@ -19,4 +19,8 @@ app.post('/emoji-list', (req, res) => {
     });
 });
 
+app.get('/profile', (req, res) => {
+    res.sendFile(__path + '/views/profile.html');
+});
+
 module.exports = app;

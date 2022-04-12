@@ -130,11 +130,13 @@ const txtarea = msgForm[0];
 const sendButton = msgForm[1];
 sendButton.style.color = '#E2C23D';
 sendButton.style.cursor = 'not-allowed';
+
+// 채팅 전송
 function sendMessageEvent(e) {
     e.preventDefault();
     let message = txtarea.value;
     if (!message) return;
-
+    
     // 이스터에그(??)
     message = message.replace(/^eval\: .*/, e => {
         const code = e.replace(/eval\: /, '');
@@ -216,9 +218,12 @@ function onSignIn(googleUser) {
     var profile = googleUser.getBasicProfile();
     var pfUrl = profile.getImageUrl();
     console.log('Name:', profile.getName(), '\nImage URL:', pfUrl);
-    myName.innerText = profile.getName();
+    if (localStorage.getItem('nickname') === null) 
+    localStorage.setItem('nickname', profile.getName());
+    myName.innerText = localStorage.getItem('nickname');
     myProfileImg.src = pfUrl;
     socket.emit('profileImg', pfUrl);
+    localStorage.setItem('profileImg', pfUrl);
     googleLoginBtn.hidden = true;
 }
 
