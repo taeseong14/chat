@@ -219,20 +219,21 @@ function onSignIn(googleUser) {
     var profile = googleUser.getBasicProfile();
     var pfUrl = profile.getImageUrl();
     console.log('Name:', profile.getName(), '\nImage URL:', pfUrl);
-
+    
     if (localStorage.getItem('nickname') === null) 
     localStorage.setItem('nickname', profile.getName());
     myName.innerText = localStorage.getItem('nickname');
-
+    
     localStorage.setItem('profileImg', pfUrl);
     myProfileImg.src = localStorage.getItem('profileImg');
     socket.emit('profileImg', localStorage.getItem('profileImg'));
-
-    const email = profile.getEmail();
-    const id = email.split('@')[0];
-    socket.emit('setId', id);
-    localStorage.setItem('id', id);
-
+    
+    if (localStorage.getItem('id') === null) {
+        const email = profile.getEmail();
+        const id = email.split('@')[0];
+        socket.emit('setId', id);
+        localStorage.setItem('id', id);
+    }
     googleLoginBtn.hidden = true;
 }
 
@@ -269,6 +270,7 @@ if (localStorage.getItem('profileImg')) {
     socket.emit('profileImg', localStorage.getItem('profileImg'));
     myProfileImg.src = localStorage.getItem('profileImg');
 } else {
+    socket.emit('profileImg', '/views/imgs/friend.png');
     localStorage.setItem('profileImg', '/views/imgs/friend.png');
     myProfileImg.src = '/views/imgs/friend.png';
 }
@@ -321,19 +323,24 @@ addFriend_searchForm.addEventListener('submit', e => {
 socket.on('searchFriend', (result) => {
     const searchResult = addFriendTab.querySelector('#search-result');
     searchResult.innerHTML = '';
+    if (!result.length) 
+    return searchResult.innerHTML = '<p>검색 결과 없음</p>';
+    if (typeof result === 'string') 
+    return alert(result);
+    
     result.forEach(user => {
         const userCard = document.createElement('div');
         userCard.classList.add('user-card');
         userCard.innerHTML = `
         <img src="${user.profileImg}" alt="">
         <div id="user-card-info-text">
-            <div>
-                <span id="user-card-name">${user.nick}</span>
-                <span id="user-card-id">#${user.id}</span>
-            </div>
-            <div>
-                <button id="user-card-add-btn">+</button>
-            </div>
+        <div>
+        <span id="user-card-name">${user.nick}</span>
+        <span id="user-card-id">#${user.id}</span>
+        </div>
+        <div>
+        <button id="user-card-add-btn">+</button>
+        </div>
         </div>
         `;
         searchResult.appendChild(userCard);

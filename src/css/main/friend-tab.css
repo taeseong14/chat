@@ -99,7 +99,9 @@
     margin-top: 15px;
     overflow-y: scroll;
 }
-
+#search-result p {
+    text-align: center;
+}
 #search-result .user-card {
     padding: 5px 15px 5px 15px;
     display: flex;
