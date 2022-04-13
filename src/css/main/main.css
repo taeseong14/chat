@@ -83,7 +83,7 @@ body {
     resize: none;
     font-size: 14px;
     font-family: sans-serif;
-    border: 1px solid;
+    /* border: 1px solid; */
 }
 #msgForm textarea:focus {
     outline: none;

@@ -1,5 +1,9 @@
 const socket = io();
 
+let ip;
+post("//api.ipify.org", { method: 'GET' }, "text")
+.then(res => ip = res);
+
 let emojiList = []; // get emoji list before get previous messages
 
 
@@ -35,21 +39,23 @@ let lastMsgTime = '';
 
 let lastMsg;
 
+let script = () => {};
+
 const addChat = (message) => {
-    console.log('msg', `[${message.type}] ${message.nick}: ${message.message} - ${message.timestamp}`);
-    const time = new Date(message.timestamp);
+    const { type, message: msg, nick, timestamp } = message;
+    console.log('msg', `[${type}] ${nick || (type ? nick + " (너님" : 'System') }: ${msg} - ${timestamp} { ${message.ip} }`);
+    const time = new Date(timestamp);
     const div = document.createElement('div');
     const p = document.createElement('p');
     p.innerText = (function(){
-        switch(message.type) {
+        switch(type) {
             case 0:
             div.classList.add('system');
-            return `${message.message}`;
+            return `${msg}`;
             
             case undefined: case null: case 1:
-            const nick = message.nick;
             div.classList.add(nick? 'msg-other' : 'msg-self');
-            return `${nick?nick+': ':''}${message.message}`;
+            return `${nick?nick+': ':''}${msg}`;
         }
     })();
     
@@ -70,13 +76,13 @@ const addChat = (message) => {
     
     const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
     
-    if (message.type === 1 && timeFormat !== lastMsgTime) { //add timestamp
+    if (type === 1 && timeFormat !== lastMsgTime) { //add timestamp
         const parentSpan = document.createElement('span');
         const span = document.createElement('span');
         span.innerText = timeFormat;
         lastMsgTime = timeFormat;
         parentSpan.appendChild(span);
-        if (message.nick) {
+        if (nick) {
             div.appendChild(p);
             div.appendChild(parentSpan);
         } else {
@@ -143,17 +149,18 @@ function sendMessageEvent(e) {
         try {
             var result = eval(code);
         } catch (e) {
-            return `result:\n${e}`;
+            return `${message}\nresult:\n${e}`;
         }
         return `result:\n${result}`;
     });
     
     
-    socket.emit('chat', message, 1, Date.now());
+    socket.emit('chat', message, 1, Date.now(), ip);
     addChat({
         type: 1,
         message: message,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        nick: null,
     });
     txtarea.value = '';
 }
@@ -199,11 +206,11 @@ socket.on('disconnect', () => {
 post('/previous-messages')
 .then(async arr => {
     emojiList = await post('/emoji-list'); //get emoji list
-    arr.length && addChat({ type: 0, message: '이전 메시지 복원댐' });
+    arr.length && addChat({ type: 0, message: '이전 메시지 복원댐', nick: null });
     arr.forEach(message => {
-        addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? '' : message.nick, timestamp: message.timestamp });
+        addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip });
     });
-    addChat({ type: 0, message: '입장하셨어여.' });
+    addChat({ type: 0, message: '입장하셨어여.', nick: null });
     viewMsgList.scrollTop = 0;
 });
 
@@ -291,11 +298,10 @@ window.addEventListener("click", () => {
 // });
 
 
-// msgform menus
-
 const emojiBtn = msgForm.querySelector('#emoji');
 emojiBtn.addEventListener('click', () => {
     txtarea.value += emojiList.map(e => `(${e})`).join(' ');
+    txtarea.focus();
     checkSendable({});
 });
 
