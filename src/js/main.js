@@ -393,5 +393,5 @@ addFriendTab.querySelector('#add-friend-tab-title > span:last-child').addEventLi
 
 
 
-friendBtn.click();
-addFriendBtn.click();
+// friendBtn.click();
+// addFriendBtn.click();
