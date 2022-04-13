@@ -1,6 +1,4 @@
-const __path = __dirname
-.split("\\").slice(0, -1).join("\\")
-.split("/").slice(0, -1).join("/");
+const __path = __dirname.includes("/") ? __dirname.split("/").slice(0, -1).join("/") : __dirname.split("\\").slice(0, -1).join("\\");
 
 const glob = require('glob');
 
