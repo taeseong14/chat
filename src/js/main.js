@@ -5,7 +5,7 @@ post("//api.ipify.org", { method: 'GET' }, "text")
 .then(res => ip = res);
 
 let emojiList = []; // get emoji list before get previous messages
-
+const people = [];
 
 // 칭구 / 챗 화면 전환
 
@@ -45,8 +45,9 @@ let lastMsg;
 let script = () => {};
 
 const addChat = (message) => {
-    const { type, nick, timestamp, img } = message;
+    const { type, id, nick, timestamp, img } = message;
     let msg = message.message;
+    console.log(img);
     console.log('msg', `[${type}] ${nick || (type ? nick + " (너님" : 'System') }: ${msg} - ${timestamp} { ${message.ip} }`);
     const time = new Date(timestamp);
     const div = document.createElement('div');
@@ -55,20 +56,32 @@ const addChat = (message) => {
         switch(type) {
             case 0:
             div.classList.add('system');
+            if (msg.endsWith('입장하였습니다.')) people.push(id);
             return `${msg}`;
             
             case 1:
             div.classList.add(nick? 'msg-other' : 'msg-self');
+
+            // 링크 하이라이트
+            msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/]+)?/gi, e => {
+                if (e.endsWith('.png')) return e;
+                return `<a href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
+            });
+
             // 이모지 표현
-            msg = msg.replace(/\([가-힣0-9]{1,2}\)/g, m => {
+            msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z]{1,2}\)/gi, m => {
                 const emoji = m.slice(1, -1);
-                if (emojiList.includes(emoji)) {
+                if (emojiList.filter(e => e.type === "png").map(e => e.name).includes(emoji)) {
+
                     return `<img src=/views/imgs/emoji/${emoji}.png>`;
+                } else  if (emojiList.filter(e => e.type === "webp").map(e => e.name).includes(emoji)) {
+                    return `<img src=/views/imgs/emoji/${emoji}.webp>`;
                 } else {
                     return m;
                 }
             });
             if (!msg.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
+
             return `${nick?nick+': ':''}${msg}`;
             
             
@@ -81,15 +94,10 @@ const addChat = (message) => {
         }
     })();
     
-    // 링크 하이라이트
-    p.innerHTML = p.innerHTML.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/]+)?/gi, e => {
-        if (e.endsWith('.png')) return e;
-        return `<a href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
-    });
     
     // id 하이라이트
-    p.innerHTML = p.innerHTML.replace(/(#[A-Z0-9가-힣]{1,20})/gi, e => {
-        return `<a href="/profile/${e.slice(1)}">${e}</a>`; 
+    p.innerHTML = p.innerHTML.replace(/(#[A-Z0-9_]{6,20})/gi, e => {
+        return `<a target="blank" href="/profile/${e.slice(1)}">${e}</a>`; 
     });
     
     const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
@@ -119,9 +127,18 @@ const addChat = (message) => {
         contextElement.style.left = e.offsetX + "px";
         contextElement.classList.add('active');
     });
-    
+
     
     msgList.appendChild(div);
+    
+    // 이모지 클릭시 새로고침
+    const lastEmoji = document.querySelector('.only-emoji:last-child');
+    console.log(lastEmoji);
+    lastEmoji && lastEmoji.querySelector('img').src.endsWith('.webp') && lastEmoji.addEventListener("click", () => {
+        const img = lastEmoji.querySelector("img");
+        img.src = img.src.split("?")[0] + "?" + Date.now();
+    });
+    
     viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
 
@@ -135,7 +152,7 @@ if (lastNick !== null) {
     socket.emit('chat', { message: `${lastNick}님이 입장하였습니다.`, type: 0 });
     nickForm.hidden = true;
 } else {
-    socket.emit('chat', { message: '누군가가 입장하였어여', type: 0 });
+    socket.emit('chat', { message: '누군가가 입장하였습니다.', type: 0 });
 }
 
 nickForm.addEventListener('submit', (e) => {
@@ -322,7 +339,7 @@ window.addEventListener("click", () => {
 
 const emojiBtn = msgForm.querySelector('#emoji');
 emojiBtn.addEventListener('click', () => {
-    txtarea.value += emojiList.map(e => `(${e})`).join(' ');
+    txtarea.value += emojiList.map(e => `(${e.name})`).join(' ');
     txtarea.focus();
     checkSendable({});
 });

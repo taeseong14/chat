@@ -38,21 +38,21 @@ app.get('/profile/:id', (req, res) => { // get specific profile
 
 io.on('connection', (socket) => {
     socket.nick = 'Anonymous';
-    socket.id_ = socket.id.replace(/[^A-Z0-9]/gi, '').slice(0, 10);
+    socket.id_ = socket.id.replace(/[^A-Z0-9_]/gi, '').slice(0, 10);
     socket.join('hello');
     sockets.push(socket);
     
     socket.on('chat', ({ message, type, timestamp, ip, img }) => {
         switch(type) {
             case 0: //system message
-            msgHistory.push({ type, message, timestamp, ip });
-            return socket.to('hello').emit('chat', { type, message, nick: null, timestamp, ip });
+            msgHistory.push({ type, id: socket.id_, message, nick: null, timestamp, ip });
+            return socket.to('hello').emit('chat', { type, id: socket.id_, message, nick: null, timestamp, ip });
             case 1: //normal message
-            msgHistory.push({ type: 1, message, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
-            return socket.to('hello').emit('chat', { type: 1, message, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
+            msgHistory.push({ type: 1, id: socket.id_, message, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
+            return socket.to('hello').emit('chat', { type: 1, id: socket.id_, message, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
             case 2: //image
-            msgHistory.push({ type: 2, img, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
-            return socket.to('hello').emit('chat', { type: 2, img, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
+            msgHistory.push({ type: 2, id: socket.id_, img, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
+            return socket.to('hello').emit('chat', { type: 2, id: socket.id_, img, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
         }
     });
     socket.on('nickname', nickname => socket.nick = nickname);
@@ -83,8 +83,9 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         sockets.splice(sockets.indexOf(socket), 1);
         if (!socket.profileImg) return;
-        msgHistory.push({type: 0, message: `${socket.nick}님이 나갔습니다.`});
-        socket.to('hello').emit('chat', { message: `${socket.nick}님이 나갔습니다.`, type: 0});
+        const obj = {type: 0, id: socket._id, message: `${socket.nick}님이 나갔습니다.`, nick: null, timestamp: Date.now(), ip: null };
+        msgHistory.push(obj);
+        socket.to('hello').emit('chat', obj);
     });
 });
 
