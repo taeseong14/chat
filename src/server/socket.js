@@ -38,9 +38,12 @@ io.on('connection', (socket) => {
         return socket.emit('searchFriend', '나 자신은 영원한 인생의 친구입니다.');
         if (search === '칭구') 
         return socket.emit('searchFriend', '칭구 없으시구나...');
-        
+
+        if (search === 'all')
+        return socket.emit('searchFriend', sockets.map(socket => ({ id: socket.id_, nick: socket.nick, profileImg: socket.profileImg })));
+
         socket.emit('searchFriend', sockets
-        .filter(searchSocket => socket.nick !== searchSocket.nick && searchSocket.id !== socket.id_)
+        // .filter(searchSocket => socket.nick !== searchSocket.nick && searchSocket.id !== socket.id_)
         .filter(socket => socket.nick.toLowerCase().includes(search.toLowerCase()) || socket.id_.includes(search))
         .map(socket => ({ id: socket.id_, nick: socket.nick, profileImg: socket.profileImg })));
     });

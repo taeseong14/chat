@@ -1,4 +1,7 @@
-const __path = __dirname.split("\\").slice(0, -1).join("\\");
+const __path = __dirname
+.split("\\").slice(0, -1).join("\\")
+.split("/").slice(0, -1).join("/");
+
 const glob = require('glob');
 
 const express = require('express');

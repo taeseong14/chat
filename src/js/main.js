@@ -301,8 +301,20 @@ emojiBtn.addEventListener('click', () => {
 
 
 
+// friends
 
+const friends = [];
 
+function setFriends(friends) {
+    const friendList = document.querySelector('#friend-list');
+    friendList.innerHTML = '';
+    document.querySelector('#friend-len > span').innerText = friends.length;
+    friends.forEach(friend => {
+        const friendElement = document.createElement('div');
+        friendElement.innerText = friend.nick;
+        friendList.appendChild(friendElement);
+    })
+}
 
 const searchFriendBtn = document.querySelector('#search-friend');
 const addFriendBtn = document.querySelector('#add-friend');
@@ -345,11 +357,41 @@ socket.on('searchFriend', (result) => {
         `;
         searchResult.appendChild(userCard);
     });
+    const friendPlusBtns = document.querySelectorAll('#user-card-add-btn');
+    console.log(friendPlusBtns);
+    friendPlusBtns.forEach(btn => {
+        const newFriendProfile = btn.parentElement.parentElement.parentElement;
+        const newFriendId = newFriendProfile.querySelector('#user-card-id').innerText.slice(1);
+        if (friends.find(user => user.id === newFriendId)) {
+            btn.innerText = '추가됨';
+            btn.disabled = true;
+            btn.style.fontSize = '12px';
+            btn.style.width = '50px';
+            return;
+        }
+        btn.addEventListener('click', (e) => {
+            friends.push({
+                id: newFriendId,
+                profileImg: newFriendProfile.querySelector('img').src,
+                nick: newFriendProfile.querySelector('#user-card-name').innerText
+            });
+            console.log('칭구추가뮤ㅠㅠㅠㅠ\n칭구: ', friends);
+            btn.innerText = '추가됨';
+            btn.disabled = true;
+            btn.style.fontSize = '12px';
+            btn.style.width = '50px';
+            setFriends(friends);
+        });
+    });
 });
+
 
 addFriendTab.querySelector('#add-friend-tab-title > span:last-child').addEventListener('click', () => {
     addFriendTab.classList.add('hidden');
 });
+
+
+
 
 friendBtn.click();
 addFriendBtn.click();
