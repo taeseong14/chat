@@ -45,37 +45,52 @@ let lastMsg;
 let script = () => {};
 
 const addChat = (message) => {
-    const { type, message: msg, nick, timestamp } = message;
+    const { type, nick, timestamp, img } = message;
+    let msg = message.message;
     console.log('msg', `[${type}] ${nick || (type ? nick + " (너님" : 'System') }: ${msg} - ${timestamp} { ${message.ip} }`);
     const time = new Date(timestamp);
     const div = document.createElement('div');
     const p = document.createElement('p');
-    p.innerText = (function(){
+    p.innerHTML = (function(){
         switch(type) {
             case 0:
             div.classList.add('system');
             return `${msg}`;
             
-            case undefined: case null: case 1:
+            case 1:
             div.classList.add(nick? 'msg-other' : 'msg-self');
+            // 이모지 표현
+            msg = msg.replace(/\([가-힣0-9]{1,2}\)/g, m => {
+                const emoji = m.slice(1, -1);
+                if (emojiList.includes(emoji)) {
+                    return `<img src=/views/imgs/emoji/${emoji}.png>`;
+                } else {
+                    return m;
+                }
+            });
+            if (!msg.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
             return `${nick?nick+': ':''}${msg}`;
+            
+            
+            case 2:
+            div.classList.add('imgae');
+            return `<img src="${img}">`;
+            
+            default:
+            console.log(`unknown type\n${message}`);
         }
     })();
     
     // 링크 하이라이트
-    p.innerHTML = p.innerHTML.replace(/(https?:(\/\/)?)?[a-zA-Z0-9가-힣\.\-]+\.[a-zA-Z0-9가-힣]{2,}(\/[a-zA-Z0-9가-힣\.\/]+)?/g, e => `<a href="${e.startsWith("http")?e:"//"+e}">${e}</a>`);
-    
-    // 이모지 표현
-    p.innerHTML = p.innerHTML.replace(/\([가-힣0-9]{1,2}\)/g, m => {
-        const emoji = m.slice(1, -1);
-        if (emojiList.includes(emoji)) {
-            return `<img src=/views/imgs/emoji/${emoji}.png>`;
-        } else {
-            return m;
-        }
+    p.innerHTML = p.innerHTML.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/]+)?/gi, e => {
+        if (e.endsWith('.png')) return e;
+        return `<a href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
     });
     
-    if (!p.innerHTML.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
+    // id 하이라이트
+    p.innerHTML = p.innerHTML.replace(/(#[A-Z0-9가-힣]{1,20})/gi, e => {
+        return `<a href="/profile/${e.slice(1)}">${e}</a>`; 
+    });
     
     const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
     
@@ -117,10 +132,10 @@ const msgForm = document.querySelector('form#msgForm');
 const lastNick = localStorage.getItem('nickname');
 if (lastNick !== null) { 
     socket.emit('nickname', lastNick);
-    socket.emit('chat', `${lastNick}님이 입장하였습니다.`, 0);
+    socket.emit('chat', { message: `${lastNick}님이 입장하였습니다.`, type: 0 });
     nickForm.hidden = true;
 } else {
-    socket.emit('chat', '누군가가 입장하였어여', 0);
+    socket.emit('chat', { message: '누군가가 입장하였어여', type: 0 });
 }
 
 nickForm.addEventListener('submit', (e) => {
@@ -146,6 +161,8 @@ function sendMessageEvent(e) {
     e.preventDefault();
     let message = txtarea.value;
     if (!message) return;
+
+    lastMsg = message;
     
     // 이스터에그(??)
     message = message.replace(/^eval\: .*/, e => {
@@ -159,7 +176,7 @@ function sendMessageEvent(e) {
     });
     
     
-    socket.emit('chat', message, 1, Date.now(), ip);
+    socket.emit('chat', { message, type: 1, timestamp: Date.now(), ip });
     addChat({
         type: 1,
         message: message,
@@ -174,10 +191,11 @@ msgForm.addEventListener('submit', sendMessageEvent);
 const checkSendable = (e) => {
     if (e.key === 'ArrowUp') {
         e.preventDefault();
+        if (!lastMsg) return;
         txtarea.value = lastMsg;
         const msgLength = txtarea.value.length;
         txtarea.setSelectionRange(msgLength, msgLength);
-        txtarea.focus()
+        txtarea.focus();
         return;
     }
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -197,12 +215,12 @@ txtarea.addEventListener('keydown', checkSendable);
 
 //socket events
 
-socket.on('chat', addChat)
+socket.on('chat', addChat);
 
 socket.on('disconnect', () => {
     document.title = 'Reloading...';
     location.reload();
-})
+});
 
 
 //get previous messages
@@ -259,7 +277,7 @@ function signOut() {
 
 myProfileImg.addEventListener('click', () => {
     open('/profile');
-})
+});
 
 
 // id, profile
@@ -323,7 +341,7 @@ function setFriends(friends) {
         const friendElement = document.createElement('div');
         friendElement.innerText = friend.nick;
         friendList.appendChild(friendElement);
-    })
+    });
 }
 
 const searchFriendBtn = document.querySelector('#search-friend');

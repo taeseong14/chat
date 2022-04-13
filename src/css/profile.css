@@ -1,0 +1,32 @@
+h1 {
+    margin: 20px 0;
+}
+
+img {
+    width: 100px;
+    height: 100px;
+    border-radius: 20%;
+}
+
+#nick {
+    font-size: 20px;
+    margin-left: 20px;
+}
+
+button {
+    margin-left: 10px;
+}
+
+#id {
+    color: #555;
+    margin-left: 5px;
+}
+
+div {
+    display: flex;
+}
+
+p {
+    display: flex;
+    align-self: center;
+}
