@@ -35,7 +35,10 @@ chatBtn.addEventListener('click', () => {
 
 const msgList = document.querySelector('#messages');
 const viewMsgList = chatTab.querySelector('#view-messages');
-let lastMsgTime = '';
+let lastMsgTime = {
+    time: '',
+    nick: ''
+}
 
 let lastMsg;
 
@@ -76,11 +79,12 @@ const addChat = (message) => {
     
     const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
     
-    if (type === 1 && timeFormat !== lastMsgTime) { //add timestamp
+    if (type === 1 && (timeFormat !== lastMsgTime.time || nick !== lastMsgTime.nick)) { //add timestamp
         const parentSpan = document.createElement('span');
         const span = document.createElement('span');
         span.innerText = timeFormat;
-        lastMsgTime = timeFormat;
+        lastMsgTime.time = timeFormat;
+        lastMsgTime.nick = nick;
         parentSpan.appendChild(span);
         if (nick) {
             div.appendChild(p);

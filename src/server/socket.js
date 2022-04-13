@@ -21,8 +21,8 @@ io.on('connection', (socket) => {
     
     socket.on('chat', (message, type, timestamp, ip) => {
         if (type === 0) {
-            msgHistory.push({ type, message });
-            socket.to('hello').emit('chat', { type, message, nick: null });
+            msgHistory.push({ type, message, timestamp, ip });
+            socket.to('hello').emit('chat', { type, message, nick: null, timestamp, ip });
         } else {
             msgHistory.push({ type: 1, message, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
             socket.to('hello').emit('chat', { type: 1, message, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
         return socket.emit('searchFriend', sockets.map(socket => ({ id: socket.id_, nick: socket.nick, profileImg: socket.profileImg })));
 
         socket.emit('searchFriend', sockets
-        // .filter(searchSocket => socket.nick !== searchSocket.nick && searchSocket.id !== socket.id_)
+        .filter(s=>s.id !== socket.id)
         .filter(socket => socket.nick.toLowerCase().includes(search.toLowerCase()) || socket.id_.includes(search))
         .map(socket => ({ id: socket.id_, nick: socket.nick, profileImg: socket.profileImg })));
     });
@@ -53,6 +53,7 @@ io.on('connection', (socket) => {
     })
     
     socket.on('disconnect', () => {
+        if (!socket.profileUrl) return;
         msgHistory.push({type: 0, message: `${socket.nick}님이 나갔습니다.`});
         socket.to('hello').emit('chat', { message: `${socket.nick}님이 나갔습니다.`, type: 0});
         sockets.splice(sockets.indexOf(socket), 1);
