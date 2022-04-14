@@ -37,9 +37,23 @@ chatBtn.addEventListener('click', () => {
 const msgList = document.querySelector('#messages');
 const viewMsgList = chatTab.querySelector('#view-messages');
 
+// 자동스크롤
+const godown = document.querySelector('#godown');
+godown.addEventListener('click', () => {
+    viewMsgList.scrollTop = viewMsgList.scrollHeight;
+});
+godown.hidden = true;
+let is_scrolled_to_bottom = true;
+
 viewMsgList.addEventListener('scroll', () => {
-    // if (viewMsgList.scrollTop === 0)
-    console.log(viewMsgList.scrollHeight, viewMsgList.clientHeight + viewMsgList.scrollTop);
+    const scroll = viewMsgList.scrollTop + viewMsgList.clientHeight + 100;
+    if (scroll > viewMsgList.scrollHeight) {
+        is_scrolled_to_bottom = true;
+        godown.hidden = true;
+    } else {
+        is_scrolled_to_bottom = false;
+        godown.hidden = false;
+    }
 });
 
 let lastMsgTime = {
@@ -147,7 +161,8 @@ const addChat = (message) => {
         });
     }
     
-    // viewMsgList.scrollTop = viewMsgList.scrollHeight;
+    if (is_scrolled_to_bottom)
+    viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
 
 
@@ -209,6 +224,7 @@ function sendMessageEvent(e) {
         nick: null,
     });
     txtarea.value = '';
+    viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
 
 msgForm.addEventListener('submit', sendMessageEvent);

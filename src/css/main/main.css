@@ -135,3 +135,13 @@ body {
 #context-menu .item:hover {
     background-color: #555
 }
+
+#godown {
+    position: absolute;
+    top: 65.5%;
+    left: 65.5%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+}
