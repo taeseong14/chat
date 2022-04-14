@@ -1,8 +1,17 @@
 const socket = io();
 
 let ip;
+const banned_user = ["8.38.149.6"];
+if (localStorage.getItem('banned') === 'true') location.href = '//google.com/';
 post("//api.ipify.org", { method: 'GET' }, "text")
-.then(res => ip = res);
+.then(res => ip = res)
+.then(() => {
+    if (banned_user.includes(ip)) {
+        alert(`ip 밴먹음.\n${banned_user.length}명 밴먹었는데ㅋㅋㅋ\nㅂㅂ`);
+        localStorage.setItem('banned', 'true');
+        location.href = 'https://ck.b-p.kro.kr/';
+    }
+})
 
 let emojiList = []; // get emoji list before get previous messages
 const people = [];
