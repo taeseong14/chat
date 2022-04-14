@@ -61,27 +61,27 @@ const addChat = (message) => {
             
             case 1:
             div.classList.add(nick? 'msg-other' : 'msg-self');
-
+            
             // 링크 하이라이트
             msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/]+)?/gi, e => {
                 if (e.endsWith('.png')) return e;
                 return `<a href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
             });
-
+            
             // 이모지 표현
             msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z]{1,2}\)/gi, m => {
                 const emoji = m.slice(1, -1);
                 if (emojiList.filter(e => e.type === "png").map(e => e.name).includes(emoji)) {
-
-                    return `<img src=/views/imgs/emoji/${emoji}.png>`;
+                    
+                    return `<img src="/views/imgs/emoji/${emoji}.png">`;
                 } else  if (emojiList.filter(e => e.type === "webp").map(e => e.name).includes(emoji)) {
-                    return `<img src=/views/imgs/emoji/${emoji}.webp>`;
+                    return `<img src="/views/imgs/emoji/${emoji}.webp?${Date.now()}">`;
                 } else {
                     return m;
                 }
             });
             if (!msg.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
-
+            
             return `${nick?nick+': ':''}${msg}`;
             
             
@@ -127,17 +127,20 @@ const addChat = (message) => {
         contextElement.style.left = e.offsetX + "px";
         contextElement.classList.add('active');
     });
-
+    
     
     msgList.appendChild(div);
     
     // 이모지 클릭시 새로고침
-    const lastEmoji = document.querySelector('.only-emoji:last-child');
-    console.log(lastEmoji);
-    lastEmoji && lastEmoji.querySelector('img').src.endsWith('.webp') && lastEmoji.addEventListener("click", () => {
-        const img = lastEmoji.querySelector("img");
-        img.src = img.src.split("?")[0] + "?" + Date.now();
-    });
+    const emojis = document.querySelectorAll('.only-emoji > img');
+    console.log(emojis);
+    if (emojis.length) {
+        emojis.filter(img => img.src.includes('.webp')).forEach(img => {
+            img.addEventListener('click', () => {
+                img.src = img.src.split("?")[0] + "?" + Date.now();
+            });
+        });
+    }
     
     viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
@@ -178,7 +181,7 @@ function sendMessageEvent(e) {
     e.preventDefault();
     let message = txtarea.value;
     if (!message) return;
-
+    
     lastMsg = message;
     
     // 이스터에그(??)
