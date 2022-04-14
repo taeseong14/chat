@@ -42,7 +42,7 @@ io.on('connection', (socket) => {
     socket.join('hello');
     sockets.push(socket);
     
-    socket.on('chat', ({ message, type, timestamp, ip, img }) => {
+    socket.on('message', ({ message, type, timestamp, ip, img }) => {
         switch(type) {
             case 0: //system message
             msgHistory.push({ type, id: socket.id_, message, nick: null, timestamp, ip });
@@ -68,6 +68,11 @@ io.on('connection', (socket) => {
         
         if (search === 'all')
         return socket.emit('searchFriend', sockets.map(socket => ({ id: socket.id_, nick: socket.nick, profileImg: socket.profileImg })));
+
+        if (search.startsWith('#'))
+        return socket.emit('searchFriend', sockets
+        .filter(socket => socket.id_ === search.slice(1)) // id 일치
+        .map(socket => ({ id: socket.id_, nick: socket.nick, profileImg: socket.profileImg })));
         
         socket.emit('searchFriend', sockets
         .filter(s=>s.id !== socket.id) // 자신 빼기

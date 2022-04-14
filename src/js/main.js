@@ -5,7 +5,7 @@ const banned_user = ["8.38.149.6"];
 if (localStorage.getItem('banned') === 'true') {
     document.body.hidden = true;
     setTimeout(() => {
-        alert("기기밴도 먹음 엌ㅋㅋ");
+        console.log('기기밴 ㅊㅊ');
         location.href = '//ck.b-p.kro.kr/';
     }, 10);
 }
@@ -23,7 +23,7 @@ post("//api.ipify.org", { method: 'GET' }, "text")
 })
 
 let emojiList = []; // get emoji list before get previous messages
-const people = [];
+const people = []; // 머였는지 까먹음
 
 // 칭구 / 챗 화면 전환
 
@@ -49,7 +49,9 @@ chatBtn.addEventListener('click', () => {
 });
 
 
-// 채팅관련?
+/**
+ * 채팅관련?
+ */
 
 const msgList = document.querySelector('#messages');
 const viewMsgList = chatTab.querySelector('#view-messages');
@@ -106,10 +108,12 @@ const addChat = (message) => {
             case 0:
             div.classList.add('system');
             if (msg.endsWith('입장하였습니다.')) people.push(id);
+            lastPerson = null;
             return `${msg}`;
             
             case 1:
             msg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
+            msg = msg.replace(/\n/g, '<br>'); // 줄바꿈
             div.classList.add(nick? 'msg-other' : 'msg-self');
             
             // 링크 하이라이트
@@ -136,10 +140,12 @@ const addChat = (message) => {
             msg = msg.replace(/(#[A-Z0-9_]{6,20})/gi, e => {
                 return `<a target="blank" href="/profile/${e.slice(1)}">${e}</a>`; 
             });
+
+            // 프사/닉
             setTimeout(() => {
                 lastPerson = nick;
             }, 0);
-            if (lastPerson !== nick && nick !== 'System' && nick !== null) {
+            if (nick && lastPerson !== nick) {
                 const div = document.createElement('div');
                 div.classList.add('profile-box');
                 const img = document.createElement('img');
@@ -150,6 +156,7 @@ const addChat = (message) => {
                 div.appendChild(p);
                 msgList.appendChild(div);
             }
+
             return `${msg}`;
             
             
@@ -166,7 +173,7 @@ const addChat = (message) => {
     
     const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
     
-    if (type === 1 && (timeFormat !== lastMsgTime.time || nick !== lastMsgTime.nick)) { //add timestamp
+    if ([1, 2].includes(type) && (timeFormat !== lastMsgTime.time || nick !== lastMsgTime.nick)) { //add timestamp
         const parentSpan = document.createElement('span');
         const span = document.createElement('span');
         span.innerText = timeFormat;
@@ -215,10 +222,10 @@ const msgForm = document.querySelector('form#msgForm');
 const lastNick = localStorage.getItem('nickname');
 if (lastNick !== null) { 
     socket.emit('nickname', lastNick);
-    socket.emit('chat', { message: `${lastNick}님이 입장하였습니다.`, type: 0 });
+    socket.emit('message', { message: `${lastNick}님이 입장하였습니다.`, type: 0 });
     nickForm.hidden = true;
 } else {
-    socket.emit('chat', { message: '누군가가 입장하였습니다.', type: 0 });
+    socket.emit('message', { message: '누군가가 입장하였습니다.', type: 0 });
 }
 
 nickForm.addEventListener('submit', (e) => {
@@ -240,26 +247,32 @@ sendButton.style.color = '#E2C23D';
 sendButton.style.cursor = 'not-allowed';
 
 // 채팅 전송
+
+let loaded;
+
 function sendMessageEvent(e) {
     e.preventDefault();
+    if (!loaded) return;
     let message = txtarea.value;
     if (!message) return;
     
     lastMsg = message;
     
     // 이스터에그(??)
-    message = message.replace(/^eval\: .*/, e => {
-        const code = e.replace(/eval\: /, '');
+    message = message.replace(/^ev\: .*/, e => {
+        const code = e.replace(/ev\: /, '');
         try {
             var result = eval(code);
         } catch (e) {
-            return `${message}\nresult:\n${e}`;
+            localStorage.setItem('banned', 'true'); // 오류나면 기기밴 ^^7
+            location.reload();
+            return `이발하려다 오류냈어여! ${message}`;
         }
         return `result:\n${result}`;
     });
     
     
-    socket.emit('chat', { message, type: 1, timestamp: Date.now(), ip });
+    socket.emit('message', { message, type: 1, timestamp: Date.now(), ip });
     addChat({
         type: 1,
         message: message,
@@ -312,16 +325,17 @@ socket.on('disconnect', () => {
 post('/previous-messages')
 .then(async arr => {
     emojiList = await post('/emoji-list'); //get emoji list
-    const maxLength = 30;
+    const maxLength = 10;
     if (arr.length) {
         const msgs = arr.slice(-maxLength);
-        addChat({ type: 0, message: `이전 메시지 복원댐 (${msgs.length})${msgs.length !== arr.length ? ' <span class="loadable">(+' + (arr.length - msgs.length) + ')</span>' : ''}`, nick: null });
+        addChat({ type: 0, message: `이전 메시지 복원댐 (${msgs.length})${msgs.length !== arr.length ? ' <span class="loadable" title="추가 로딩">(+' + (arr.length - msgs.length) + ')</span>' : ''}`, nick: null });
         msgs.forEach(message => {
             addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip, previous: true });
         });
     }
     addChat({ type: 0, message: '입장하셨어여.', nick: null });
     viewMsgList.scrollTop = 0; // 전메 보고와라(?)
+    loaded = true;
 });
 
 
@@ -460,8 +474,12 @@ addFriendTab.addEventListener('keydown', e => {
     }
 })
 
+const searchResult = addFriendTab.querySelector('#search-result');
+
 addFriendBtn.addEventListener('click', () => {
-    addFriendTab.classList.toggle('hidden');
+    addFriendTab.hidden = !addFriendTab.hidden;
+    addFriendTab.querySelector('input').value = '';
+    searchResult.innerHTML = '';
     addFriendTab.querySelector('input').focus();
 });
 
@@ -474,7 +492,7 @@ addFriend_searchForm.addEventListener('submit', e => {
     socket.emit('searchFriend', search);
 });
 socket.on('searchFriend', (result) => {
-    const searchResult = addFriendTab.querySelector('#search-result');
+    result = result.filter(pf => pf.profileImg); // 유령계점;
     searchResult.innerHTML = '';
     if (!result.length) 
     return searchResult.innerHTML = '<p>검색 결과 없음</p>';
@@ -484,6 +502,7 @@ socket.on('searchFriend', (result) => {
     result.forEach(user => {
         const userCard = document.createElement('div');
         userCard.classList.add('user-card');
+        const id = localStorage.getItem('id');
         userCard.innerHTML = `
         <img src="${user.profileImg}" alt="">
         <div id="user-card-info-text">
@@ -492,13 +511,13 @@ socket.on('searchFriend', (result) => {
         <span id="user-card-id">#${user.id}</span>
         </div>
         <div>
-        <button id="user-card-add-btn">+</button>
+        <button id="user-card-add-btn${id==user.id?'-me':''}">${id==user.id?'나임':'+'}</button>
         </div>
         </div>
         `;
         searchResult.appendChild(userCard);
     });
-    const friendPlusBtns = document.querySelectorAll('#user-card-add-btn');
+    const friendPlusBtns = document.querySelectorAll('#user-card-add-btn'); //테스트중!!!!
     console.log(friendPlusBtns);
     friendPlusBtns.forEach(btn => {
         const newFriendProfile = btn.parentElement.parentElement.parentElement;
@@ -517,9 +536,9 @@ socket.on('searchFriend', (result) => {
                 nick: newFriendProfile.querySelector('#user-card-name').innerText
             });
             console.log('칭구추가뮤ㅠㅠㅠㅠ\n칭구: ', friends);
+            btn.id = 'user-card-add-btn-added';
             btn.innerText = '추가됨';
             btn.disabled = true;
-            btn.style.fontSize = '12px';
             btn.style.width = '50px';
             setFriends(friends);
         });
@@ -528,7 +547,7 @@ socket.on('searchFriend', (result) => {
 
 
 addFriendTab.querySelector('#add-friend-tab-title > span:last-child').addEventListener('click', () => {
-    addFriendTab.classList.add('hidden');
+    addFriendTab.hidden = true;
 });
 
 

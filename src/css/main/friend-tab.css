@@ -145,3 +145,17 @@
 .user-card #user-card-add-btn:disabled {
     color: #000;
 }
+.user-card #user-card-add-btn-me {
+    font-size: 13px;
+    padding: 0;
+    width: 35px;
+    height: 25px;
+    text-align: center;
+}
+.user-card #user-card-add-btn-added {
+    font-size: 12px;
+    padding: 0;
+    width: 50px;
+    height: 25px;
+    text-align: center;
+}
