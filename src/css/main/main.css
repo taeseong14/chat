@@ -108,13 +108,6 @@ body {
 
 
 
-
-
-.hidden {
-    display: none;
-}
-
-
 #context-menu {
     position: fixed;
     z-index: 10000;

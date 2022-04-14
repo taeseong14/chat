@@ -7,6 +7,8 @@
     border-radius: 5px;
     padding: 5px;
     margin: 2px 0;
+    display: flex;
+    justify-content: center;
 }
 
 .system {
@@ -18,6 +20,14 @@
     padding: 0 !important;
     width: 100%;
 }
+
+.profile-box img {
+    width: 30px;
+    height: 30px;
+    border-radius: 30%;
+    cursor: pointer;
+}
+
 .msg-self {
     justify-content: flex-end;
 }
@@ -42,6 +52,7 @@
 .only-emoji img {
     width: 100px !important;
     height: 100px !important;
+    margin-left: 10px;
 }
 
 
@@ -55,4 +66,14 @@
 .msg-self > span > span, .msg-other > span > span {
     display: inline-block;
     align-self: flex-end;
+}
+
+
+/* type 2: image */
+
+.image img {
+    width: 200px !important;
+    height: 200px !important;
+    cursor: pointer;
+    border-radius: 5px; 
 }

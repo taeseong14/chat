@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="303578995366-k5s7056t1094rev0jh5ctb3s4cvptbhh.apps.googleusercontent.com">
-    <link rel="icon" type="image/x-icon" href="/views/imgs/favicon.ico">
+    
+    <!-- google login -->
     <link rel="stylesheet" href="/css/main/main.css">
     <link rel="stylesheet" href="/css/main/chat.css">
     <link rel="stylesheet" href="/css/main/friend-tab.css">
+    
+    <meta property="og:image" content="/views/imgs/favicon.ico">
+    <meta property="og:description" content="Chat">
+    <link rel="icon" type="image/x-icon" href="/views/imgs/favicon.ico">
     <title>Chat</title>
 </head>
 <body>
@@ -22,7 +27,7 @@
     </div> -->
     <div id="content">
         <form id="nickForm">
-            <input type="text" autofocus placeholder="write nick">
+            <input type="text" placeholder="write nick">
             <button>send msg</button>
         </form>
         <div id="chatScreen">
@@ -35,7 +40,7 @@
                 </div>
             </div>
             <div id="tabs">
-                <div id="friend-tab">
+                <div id="friend-tab" hidden>
                     <div id="friend-tab-text">
                         칭구
                         <div id="friend-icons">
@@ -49,7 +54,7 @@
                             <div>
                                 <span id="my-name">Anonymous</span>
                                 <span id="my-id" title="copy"></span>
-                                <span id="copied" class="hidden">copied!</span>
+                                <span id="copied" hidden>copied!</span>
                             </div>
                         </div>
                         <div id="view-friend">
@@ -59,7 +64,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="add-friend-tab" class="hidden">
+                    <div id="add-friend-tab" hidden>
                         <div id="add-friend-tab-title">
                             <span>칭구 추가</span>
                             <span>x</span>
@@ -90,7 +95,7 @@
                             <button>전송</button>
                         </div>
                     </form>
-                    <img src="/views/imgs/godown.png" id="godown">
+                    <img src="/views/imgs/godown.png" id="godown" hidden>
                 </div>
             </div>
         </div>

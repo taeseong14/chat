@@ -2,14 +2,23 @@ const socket = io();
 
 let ip;
 const banned_user = ["8.38.149.6"];
-if (localStorage.getItem('banned') === 'true') location.href = '//google.com/';
+if (localStorage.getItem('banned') === 'true') {
+    document.body.hidden = true;
+    setTimeout(() => {
+        alert("기기밴도 먹음 엌ㅋㅋ");
+        location.href = '//ck.b-p.kro.kr/';
+    }, 10);
+}
 post("//api.ipify.org", { method: 'GET' }, "text")
 .then(res => ip = res)
 .then(() => {
     if (banned_user.includes(ip)) {
-        alert(`ip 밴먹음.\n${banned_user.length}명 밴먹었는데ㅋㅋㅋ\nㅂㅂ`);
-        localStorage.setItem('banned', 'true');
-        location.href = 'https://ck.b-p.kro.kr/';
+        document.body.hidden = true;
+        setTimeout(() => {
+            alert(`ip 밴먹음.\n${banned_user.length}명 밴먹었는데ㅋㅋㅋ\nㅂㅂ`);
+            localStorage.setItem('banned', 'true');
+            location.href = '//ck.b-p.kro.kr/';
+        }, 10);
     }
 })
 
@@ -20,7 +29,6 @@ const people = [];
 
 const friendTab = document.querySelector('#friend-tab');
 const chatTab = document.querySelector('#chat-tab');
-friendTab.hidden = true;
 
 const menu = document.querySelector('#menu');
 const friendBtn = menu.querySelector('#friend img');
@@ -51,7 +59,6 @@ const godown = document.querySelector('#godown');
 godown.addEventListener('click', () => {
     viewMsgList.scrollTop = viewMsgList.scrollHeight;
 });
-godown.hidden = true;
 let is_scrolled_to_bottom = true;
 
 viewMsgList.addEventListener('scroll', () => {
@@ -71,18 +78,30 @@ let lastMsgTime = {
 }
 
 let lastMsg;
+let lastPerson;
 
 let script = () => {};
 
+const previousMsgs = []; // 전메들 담아둔거
+let returnedPreviousMsg = false;
+
 const addChat = (message) => {
-    const { type, id, nick, timestamp, img } = message;
+    const { type, id, nick, profile, timestamp, img } = message;
     let msg = message.message;
     img && console.log('이미지: ' + img);
-    console.log('msg', `[${type}] ${nick || (type ? nick + " (너님" : 'System') }: ${msg} - ${timestamp} { ${message.ip} }`);
+    if (message.previous) {
+        previousMsgs.push(message);
+        if (!returnedPreviousMsg) {
+            returnedPreviousMsg = true;
+            console.log('[!] 전메 복원댐: previousMsgs로 확인');
+        }
+    }
+    else console.log(`[${type}] ${nick || (type ? '너님' : 'System') }: ${msg} - ${timestamp}${message.ip ? ` { ${message.ip} }` : ''}`);
     const time = new Date(timestamp);
     const div = document.createElement('div');
     const p = document.createElement('p');
     p.innerHTML = (function(){
+        
         switch(type) {
             case 0:
             div.classList.add('system');
@@ -90,6 +109,7 @@ const addChat = (message) => {
             return `${msg}`;
             
             case 1:
+            msg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
             div.classList.add(nick? 'msg-other' : 'msg-self');
             
             // 링크 하이라이트
@@ -112,12 +132,30 @@ const addChat = (message) => {
             });
             if (!msg.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
             
-            return `${nick?nick+': ':''}${msg}`;
+            // id 하이라이트
+            msg = msg.replace(/(#[A-Z0-9_]{6,20})/gi, e => {
+                return `<a target="blank" href="/profile/${e.slice(1)}">${e}</a>`; 
+            });
+            setTimeout(() => {
+                lastPerson = nick;
+            }, 0);
+            if (lastPerson !== nick && nick !== 'System' && nick !== null) {
+                const div = document.createElement('div');
+                div.classList.add('profile-box');
+                const img = document.createElement('img');
+                img.src = profile;
+                div.appendChild(img);
+                const p = document.createElement('p');
+                p.innerText = nick;
+                div.appendChild(p);
+                msgList.appendChild(div);
+            }
+            return `${msg}`;
             
             
             case 2:
-            div.classList.add('imgae');
-            return `<img src="${img}">`;
+            div.classList.add('image');
+            return `바풀: <img src="${img}">`;
             
             default:
             console.log(`unknown type\n${message}`);
@@ -125,10 +163,6 @@ const addChat = (message) => {
     })();
     
     
-    // id 하이라이트
-    p.innerHTML = p.innerHTML.replace(/(#[A-Z0-9_]{6,20})/gi, e => {
-        return `<a target="blank" href="/profile/${e.slice(1)}">${e}</a>`; 
-    });
     
     const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
     
@@ -278,12 +312,16 @@ socket.on('disconnect', () => {
 post('/previous-messages')
 .then(async arr => {
     emojiList = await post('/emoji-list'); //get emoji list
-    arr.length && addChat({ type: 0, message: '이전 메시지 복원댐', nick: null });
-    arr.forEach(message => {
-        addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip });
-    });
+    const maxLength = 30;
+    if (arr.length) {
+        const msgs = arr.slice(-maxLength);
+        addChat({ type: 0, message: `이전 메시지 복원댐 (${msgs.length})${msgs.length !== arr.length ? ' <span class="loadable">(+' + (arr.length - msgs.length) + ')</span>' : ''}`, nick: null });
+        msgs.forEach(message => {
+            addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip, previous: true });
+        });
+    }
     addChat({ type: 0, message: '입장하셨어여.', nick: null });
-    viewMsgList.scrollTop = 0;
+    viewMsgList.scrollTop = 0; // 전메 보고와라(?)
 });
 
 
@@ -298,8 +336,8 @@ function onSignIn(googleUser) {
     var profile = googleUser.getBasicProfile();
     var pfUrl = profile.getImageUrl();
     const email = profile.getEmail();
-
-    console.log('Name:', profile.getName(), '\nImage URL:', pfUrl);
+    
+    console.log('[Google Logined]\nName:', profile.getName(), '\nImage URL:', pfUrl);
     
     if (localStorage.getItem('nickname') === null) 
     localStorage.setItem('nickname', profile.getName());
@@ -346,8 +384,8 @@ myId.addEventListener('click', () => {
     document.execCommand('copy');
     textarea.remove();
     const copied = document.querySelector('#copied');
-    copied.classList.remove('hidden');
-    setTimeout(() => copied.classList.add('hidden'), 500);
+    copied.hidden = false;
+    setTimeout(() => copied.hidden = true, 500);
 });
 
 if (localStorage.getItem('id')) {
