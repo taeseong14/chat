@@ -132,13 +132,11 @@ const addChat = (message) => {
     msgList.appendChild(div);
     
     // 이모지 클릭시 새로고침
-    const emojis = document.querySelectorAll('.only-emoji > img');
-    console.log(emojis);
-    if (emojis.length) {
-        Array.from(emojis).filter(img => img.src.includes('.webp')).forEach(img => {
-            img.addEventListener('click', () => {
-                img.src = img.src.split("?")[0] + "?" + Date.now();
-            });
+    const emojis = Array.from(document.querySelectorAll('.only-emoji > img')).slice(-1);
+    if (emojis.length && type === 1 && p.innerHTML.includes('<img src=')) {
+        const emoji = Array.from(emojis).slice(-1)[0];
+        emoji.addEventListener('click', () => {
+            emoji.src = emoji.src.split("?")[0] + "?" + Date.now();
         });
     }
     
@@ -368,8 +366,17 @@ const searchFriendBtn = document.querySelector('#search-friend');
 const addFriendBtn = document.querySelector('#add-friend');
 const addFriendTab = document.querySelector('#add-friend-tab');
 
+addFriendTab.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        e.preventDefault();
+        addFriendTab.querySelector('input').value = '';
+        addFriendTab.classList.add('hidden');
+    }
+})
+
 addFriendBtn.addEventListener('click', () => {
     addFriendTab.classList.toggle('hidden');
+    addFriendTab.querySelector('input').focus();
 });
 
 const addFriend_searchForm = addFriendTab.querySelector('form');
