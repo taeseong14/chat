@@ -1,7 +1,7 @@
 const socket = io();
 
 let ip;
-const banned_user = ["8.38.149.6"];
+const banned_user = ["8.38.149.6", "175.223.19.142"];
 if (localStorage.getItem('banned') === 'true') {
     document.body.hidden = true;
     setTimeout(() => {
