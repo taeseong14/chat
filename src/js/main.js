@@ -135,7 +135,7 @@ const addChat = (message) => {
     const emojis = document.querySelectorAll('.only-emoji > img');
     console.log(emojis);
     if (emojis.length) {
-        emojis.filter(img => img.src.includes('.webp')).forEach(img => {
+        Array.from(emojis).filter(img => img.src.includes('.webp')).forEach(img => {
             img.addEventListener('click', () => {
                 img.src = img.src.split("?")[0] + "?" + Date.now();
             });
