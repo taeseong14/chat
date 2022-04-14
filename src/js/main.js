@@ -28,6 +28,7 @@ chatBtn.addEventListener('click', () => {
     chatBtn.src = '/views/imgs/chat-focus.png';
     chatTab.hidden = false;
     friendTab.hidden = true;
+    txtarea.focus();
 });
 
 
@@ -35,6 +36,12 @@ chatBtn.addEventListener('click', () => {
 
 const msgList = document.querySelector('#messages');
 const viewMsgList = chatTab.querySelector('#view-messages');
+
+viewMsgList.addEventListener('scroll', () => {
+    // if (viewMsgList.scrollTop === 0)
+    console.log(viewMsgList.scrollHeight, viewMsgList.clientHeight + viewMsgList.scrollTop);
+});
+
 let lastMsgTime = {
     time: '',
     nick: ''
@@ -47,7 +54,7 @@ let script = () => {};
 const addChat = (message) => {
     const { type, id, nick, timestamp, img } = message;
     let msg = message.message;
-    console.log(img);
+    img && console.log('이미지: ' + img);
     console.log('msg', `[${type}] ${nick || (type ? nick + " (너님" : 'System') }: ${msg} - ${timestamp} { ${message.ip} }`);
     const time = new Date(timestamp);
     const div = document.createElement('div');
@@ -69,7 +76,7 @@ const addChat = (message) => {
             });
             
             // 이모지 표현
-            msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z]{1,2}\)/gi, m => {
+            msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z]{1,3}\)/gi, m => {
                 const emoji = m.slice(1, -1);
                 if (emojiList.filter(e => e.type === "png").map(e => e.name).includes(emoji)) {
                     
@@ -132,15 +139,15 @@ const addChat = (message) => {
     msgList.appendChild(div);
     
     // 이모지 클릭시 새로고침
-    const emojis = Array.from(document.querySelectorAll('.only-emoji > img')).slice(-1);
+    const emojis = Array.from(document.querySelectorAll('.only-emoji > img')).filter(e=>e.src.includes(".webp")).slice(-1);
     if (emojis.length && type === 1 && p.innerHTML.includes('<img src=')) {
-        const emoji = Array.from(emojis).slice(-1)[0];
+        const emoji = Array.from(emojis)[0];
         emoji.addEventListener('click', () => {
             emoji.src = emoji.src.split("?")[0] + "?" + Date.now();
         });
     }
     
-    viewMsgList.scrollTop = viewMsgList.scrollHeight;
+    // viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
 
 
@@ -265,6 +272,8 @@ const myName = myProfile.querySelector('#my-name');
 function onSignIn(googleUser) {
     var profile = googleUser.getBasicProfile();
     var pfUrl = profile.getImageUrl();
+    const email = profile.getEmail();
+
     console.log('Name:', profile.getName(), '\nImage URL:', pfUrl);
     
     if (localStorage.getItem('nickname') === null) 
@@ -275,13 +284,15 @@ function onSignIn(googleUser) {
     myProfileImg.src = localStorage.getItem('profileImg');
     socket.emit('profileImg', localStorage.getItem('profileImg'));
     
-    if (localStorage.getItem('id') === null) {
-        const email = profile.getEmail();
+    googleLoginBtn.hidden = true;
+    
+    if (localStorage.getItem('googleLogin') === null) {
+        localStorage.setItem('googleLogin', 'true');
         const id = email.split('@')[0];
         socket.emit('setId', id);
         localStorage.setItem('id', id);
+        location.reload();
     }
-    googleLoginBtn.hidden = true;
 }
 
 
@@ -301,6 +312,18 @@ myProfileImg.addEventListener('click', () => {
 // id, profile
 
 const myId = myProfile.querySelector('#my-id');
+
+myId.addEventListener('click', () => {
+    const textarea = document.createElement('textarea');
+    document.body.appendChild(textarea);
+    textarea.value = `${myId.innerText}`;
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+    const copied = document.querySelector('#copied');
+    copied.classList.remove('hidden');
+    setTimeout(() => copied.classList.add('hidden'), 500);
+});
 
 if (localStorage.getItem('id')) {
     socket.emit('setId', localStorage.getItem('id'));
@@ -450,3 +473,5 @@ addFriendTab.querySelector('#add-friend-tab-title > span:last-child').addEventLi
 
 // friendBtn.click();
 // addFriendBtn.click();
+
+txtarea.focus();

@@ -44,6 +44,15 @@
     color: #555;
     font-size: 12px;
     margin-left: 6px;
+    border: 1px solid #000;
+    border-width: 0 0 1px 0;
+    cursor: pointer;
+}
+#my-profile #copied {
+    margin-left: 6px;
+    height: 20px;
+    align-self: center;
+    color: rgb(28, 116, 69);
 }
 
 #view-friend {
