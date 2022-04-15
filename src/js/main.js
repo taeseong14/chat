@@ -114,7 +114,7 @@ const addChat = (message) => {
             
             case 1:
             msg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
-            msg = msg.replace(/\n/g, '<br>'); // 줄바꿈
+            msg = msg.replace(/\n/g, '<br>').replace(/ /g, '&nbsp'); // 줄바꿈, 공백
             div.classList.add(nick? 'msg-other' : 'msg-self');
             
             // 링크 하이라이트
