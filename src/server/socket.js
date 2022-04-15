@@ -48,17 +48,18 @@ io.on('connection', (socket) => {
             msgHistory.push({ type, id: socket.id_, message, nick: null, timestamp, ip });
             return socket.to('hello').emit('chat', { type, id: socket.id_, message, nick: null, timestamp, ip });
             case 1: //normal message
-            msgHistory.push({ type: 1, id: socket.id_, message, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
-            return socket.to('hello').emit('chat', { type: 1, id: socket.id_, message, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
+            msgHistory.push({ type: 1, id: socket.id_, message, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });
+            return socket.to('hello').emit('chat', { type: 1, id: socket.id_, message, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });
             case 2: //image
-            msgHistory.push({ type: 2, id: socket.id_, img, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
-            return socket.to('hello').emit('chat', { type: 2, id: socket.id_, img, nick: socket.nick, profile: socket.profileImg, timestamp, ip });
+            msgHistory.push({ type: 2, id: socket.id_, img, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });
+            return socket.to('hello').emit('chat', { type: 2, id: socket.id_, img, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });
         }
     });
     socket.on('nickname', nickname => socket.nick = nickname);
     socket.on('profileImg', url => socket.profileImg = url);
     socket.on('setId', id => socket.id_ = id);
     socket.on('getId', () => socket.emit('getId', socket.id_));
+    socket.on('ip', ip => socket.ip = ip);
     
     socket.on('searchFriend', (search) => {
         if (search === socket.id_)
@@ -88,7 +89,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         sockets.splice(sockets.indexOf(socket), 1);
         if (!socket.profileImg) return;
-        const obj = {type: 0, id: socket._id, message: `${socket.nick}님이 나갔습니다.`, nick: null, timestamp: Date.now(), ip: null };
+        const obj = {type: 0, id: socket._id, message: `${socket.nick}님이 나갔습니다.`, nick: null, timestamp: Date.now(), ip: socket.ip };
         msgHistory.push(obj);
         socket.to('hello').emit('chat', obj);
     });

@@ -1,14 +1,19 @@
+#content #messages {
+    max-width: 100%;
+    line-break: anywhere;
+}
+
 #content #messages div {
     width: 100%;
     display: flex;
     word-break:keep-all;
+    flex-wrap: wrap;
 }
 #content #messages div p {
-    /* width: 10%; */
     border-radius: 5px;
     padding: 5px;
     margin: 2px 0;
-    display: flex;
+    /* display: flex; */
     justify-content: center;
     max-width: 80%;
 }

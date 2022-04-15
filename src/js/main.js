@@ -12,6 +12,7 @@ if (localStorage.getItem('banned') === 'true') {
 post("//api.ipify.org", { method: 'GET' }, "text")
 .then(res => ip = res)
 .then(() => {
+    socket.emit("ip", ip);
     if (banned_user.includes(ip)) {
         document.body.hidden = true;
         setTimeout(() => {
@@ -88,7 +89,7 @@ const previousMsgs = []; // 전메들 담아둔거
 let returnedPreviousMsg = false;
 
 const addChat = (message) => {
-    const { type, id, nick, profile, timestamp, img } = message;
+    const { type, id, nick, profileImg, timestamp, img } = message;
     let msg = message.message;
     img && console.log('이미지: ' + img);
     if (message.previous) {
@@ -117,9 +118,9 @@ const addChat = (message) => {
             div.classList.add(nick? 'msg-other' : 'msg-self');
             
             // 링크 하이라이트
-            msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/]+)?/gi, e => {
+            msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/\?\=]+)?/gi, e => {
                 if (e.endsWith('.png')) return e;
-                return `<a href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
+                return `<a target="blank" href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
             });
             
             // 이모지 표현
@@ -142,14 +143,15 @@ const addChat = (message) => {
             });
 
             // 프사/닉
-            setTimeout(() => {
-                lastPerson = nick;
-            }, 0);
+            // setTimeout(() => {
+            //     lastPerson = nick;
+            // }, 0);
             if (nick && lastPerson !== nick) {
+                lastPerson = nick;
                 const div = document.createElement('div');
                 div.classList.add('profile-box');
                 const img = document.createElement('img');
-                img.src = profile;
+                img.src = profileImg;
                 div.appendChild(img);
                 const p = document.createElement('p');
                 p.innerText = nick;
@@ -220,12 +222,12 @@ const nickForm = document.querySelector('form#nickForm');
 const msgForm = document.querySelector('form#msgForm');
 
 const lastNick = localStorage.getItem('nickname');
-if (lastNick !== null) { 
+if (lastNick !== null) {
     socket.emit('nickname', lastNick);
-    socket.emit('message', { message: `${lastNick}님이 입장하였습니다.`, type: 0 });
+    socket.emit('message', { message: `${lastNick}님이 입장하였습니다.`, type: 0, timestamp: Date.now(), ip });
     nickForm.hidden = true;
 } else {
-    socket.emit('message', { message: '누군가가 입장하였습니다.', type: 0 });
+    socket.emit('message', { message: '누군가가 입장하였습니다.', type: 0, timestamp: Date.now(), ip });
 }
 
 nickForm.addEventListener('submit', (e) => {
@@ -324,13 +326,18 @@ socket.on('disconnect', () => {
 
 post('/previous-messages')
 .then(async arr => {
-    emojiList = await post('/emoji-list'); //get emoji list
+    emojiList = await post('/emoji-list') //get emoji list
+    // .then(emoji => { // 임티탭 만들던..
+    //     const img = document.createElement('img');
+    //     img.src = `/views/imgs/emoji/${emoji.name}.${emoji.type || "png"}`;
+    //     emojiTab.appendChild(img);
+    // })
     const maxLength = 10;
     if (arr.length) {
         const msgs = arr.slice(-maxLength);
         addChat({ type: 0, message: `이전 메시지 복원댐 (${msgs.length})${msgs.length !== arr.length ? ' <span class="loadable" title="추가 로딩">(+' + (arr.length - msgs.length) + ')</span>' : ''}`, nick: null });
         msgs.forEach(message => {
-            addChat({ type: message.type, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip, previous: true });
+            addChat({ type: message.type, profileImg: message.profileImg, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip, previous: true });
         });
     }
     addChat({ type: 0, message: '입장하셨어여.', nick: null });
@@ -439,10 +446,9 @@ window.addEventListener("click", () => {
 
 
 const emojiBtn = msgForm.querySelector('#emoji');
+const emojiTab = msgForm.querySelector('#emoji-tab');
 emojiBtn.addEventListener('click', () => {
-    txtarea.value += emojiList.map(e => `(${e.name})`).join(' ');
-    txtarea.focus();
-    checkSendable({});
+    emojiTab.hidden = !emojiTab.hidden;
 });
 
 
