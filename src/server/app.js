@@ -19,9 +19,9 @@ app.post('/emoji-list', (req, res) => {
                 const path = file.split('/');
                 return {
                     path: path[4],
-                    type: path.pop().split(".")[1],
-                    name: path.pop().split(".")[0],
-                }
+                    type: path[5].split(".")[1],
+                    name: path[5].split(".")[0],
+                };
             }));
         }
     });

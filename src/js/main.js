@@ -125,16 +125,9 @@ const addChat = (message) => {
             });
             
             // 이모지 표현
-            msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z]{1,3}\)/gi, m => {
-                const emoji = m.slice(1, -1);
-                if (emojiList.filter(e => e.type === "png").map(e => e.name).includes(emoji)) {
-                    
-                    return `<img src="/views/imgs/emoji/${emoji}.png">`;
-                } else  if (emojiList.filter(e => e.type === "webp").map(e => e.name).includes(emoji)) {
-                    return `<img src="/views/imgs/emoji/${emoji}.webp?${Date.now()}">`;
-                } else {
-                    return m;
-                }
+            msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z]{1,}\)/gi, m => {
+                const emoji = emojiList.find(e => e.name === m.slice(1, -1));
+                return `<img src="/views/imgs/emoji/${emoji.path}/${emoji.name}.${emoji.type}?${Date.now()}">`;
             });
             if (!msg.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
             
@@ -143,10 +136,6 @@ const addChat = (message) => {
                 return `<a target="blank" href="/profile/${e.slice(1)}">${e}</a>`; 
             });
             
-            // 프사/닉
-            // setTimeout(() => {
-            //     lastPerson = nick;
-            // }, 0);
             if (lastPerson !== nick) {
                 lastPerson = nick;
                 if (nick) {
@@ -178,7 +167,7 @@ const addChat = (message) => {
     
     const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
     
-    if ([1, 2].includes(type) && (timeFormat !== lastMsgTime.time || nick !== lastMsgTime.nick)) { //add timestamp
+    if (type !== 0 && (timeFormat !== lastMsgTime.time || nick !== lastMsgTime.nick)) { //add timestamp
         const parentSpan = document.createElement('span');
         const span = document.createElement('span');
         span.innerText = timeFormat;
@@ -325,16 +314,38 @@ socket.on('disconnect', () => {
 });
 
 
+// emoji 관련
+
+const emojiBtn = msgForm.querySelector('#emoji');
+const emojiTab = msgForm.querySelector('#emoji-tab');
+emojiBtn.addEventListener('click', (e) => {
+    emojiTab.hidden = !emojiTab.hidden;
+});
+
 //get previous messages
 
 post('/previous-messages')
 .then(async arr => {
-    emojiList = await post('/emoji-list') //get emoji list
-    // .then(emoji => { // 임티탭 만들던..
-    //     const img = document.createElement('img');
-    //     img.src = `/views/imgs/emoji/${emoji.name}.${emoji.type || "png"}`;
-    //     emojiTab.appendChild(img);
-    // })
+    emojiList = await post('/emoji-list'); //get emoji list
+    const emojiTitles = [];
+    const emojiView = document.querySelector('#emoji-tab-view');
+    emojiList.forEach(e => {
+        if (!emojiTitles.includes(e.path)) { // add emoji title
+            emojiTitles.push(e.path);
+            const div = document.createElement('div');
+            div.classList.add('emoji-tab-title');
+            div.innerHTML = `${e.path} <span class="emoji-tab-title-num">${emojiList.filter(ee => ee.path === e.path).length}</span>`;
+            emojiView.appendChild(div);
+        }
+        const img = document.createElement('img');
+        img.src = `/views/imgs/emoji/${e.path}/${e.name}.${e.type}`;
+        img.title = `(${e.name})`;
+        img.addEventListener('click', () => {
+            txtarea.value += decodeURI(`(${e.name})`);
+            txtarea.focus();
+        });
+        emojiView.appendChild(img);
+    }); // add emoji tab
     const maxLength = 10;
     if (arr.length) {
         const msgs = arr.slice(-maxLength);
@@ -448,11 +459,6 @@ window.addEventListener("click", () => {
 // });
 
 
-const emojiBtn = msgForm.querySelector('#emoji');
-const emojiTab = msgForm.querySelector('#emoji-tab');
-emojiBtn.addEventListener('click', () => {
-    emojiTab.hidden = !emojiTab.hidden;
-});
 
 
 
@@ -481,7 +487,7 @@ addFriendTab.addEventListener('keydown', e => {
         addFriendTab.querySelector('input').value = '';
         addFriendTab.classList.add('hidden');
     }
-})
+});
 
 const searchResult = addFriendTab.querySelector('#search-result');
 
