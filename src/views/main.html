@@ -76,14 +76,14 @@
                             <div id="messages"></div>
                         </div>
                     </div>
-                    <form id="msgForm">
+                    <form id="msgForm" spellcheck="false">
                         <div id="div-txt">
                             <textarea type="text"></textarea>
                             <div id="msgFormMenu">
                                 <div id="emoji" title="이모티콘 종류 보기">
                                     😀
                                     <div id="emoji-tab" hidden>
-                                        <span>이모티콘 목록</span>
+                                        <div>이모티콘 목록</div>
                                         <div id="emoji-tab-view"></div>
                                     </div>
                                 </div>
@@ -109,7 +109,8 @@
     </div>
     
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/fetch.js"></script>
-    <script src="/js/main.js"></script>
+    <script src="/js/module/fetch.js"></script>
+    <script src="/js/main/main.js"></script>
+    <script src="/js/main/mobile-design.js"></script>
 </body>
 </html>
