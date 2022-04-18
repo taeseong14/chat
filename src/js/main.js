@@ -9,7 +9,7 @@ if (localStorage.getItem('banned') === 'true') {
         location.href = '//ck.b-p.kro.kr/';
     }, 10);
 }
-post("//api.ipify.org", { method: 'GET' }, "text")
+get("//api.ipify.org")
 .then(res => ip = res)
 .then(() => {
     socket.emit("ip", ip);
@@ -51,8 +51,8 @@ chatBtn.addEventListener('click', () => {
 
 
 /**
- * 채팅관련?
- */
+* 채팅관련?
+*/
 
 const msgList = document.querySelector('#messages');
 const viewMsgList = chatTab.querySelector('#view-messages');
@@ -104,17 +104,18 @@ const addChat = (message) => {
     const div = document.createElement('div');
     const p = document.createElement('p');
     p.innerHTML = (function(){
+        msg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
+        msg = msg.replace(/\n/g, '<br>'); // 줄바꿈
         
         switch(type) {
             case 0:
+            if (!loaded) msg = msg.replace(/loadable: \d+/, e=>`<span class="loadable" title="추가 로딩">(+${e.split(" ")[1]})</span>`);
             div.classList.add('system');
             if (msg.endsWith('입장하였습니다.')) people.push(id);
             lastPerson = null;
             return `${msg}`;
             
             case 1:
-            msg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
-            msg = msg.replace(/\n/g, '<br>'); // 줄바꿈
             div.classList.add(nick? 'msg-other' : 'msg-self');
             
             // 링크 하이라이트
@@ -141,24 +142,26 @@ const addChat = (message) => {
             msg = msg.replace(/(#[A-Z0-9_]{6,20})/gi, e => {
                 return `<a target="blank" href="/profile/${e.slice(1)}">${e}</a>`; 
             });
-
+            
             // 프사/닉
             // setTimeout(() => {
             //     lastPerson = nick;
             // }, 0);
-            if (nick && lastPerson !== nick) {
+            if (lastPerson !== nick) {
                 lastPerson = nick;
-                const div = document.createElement('div');
-                div.classList.add('profile-box');
-                const img = document.createElement('img');
-                img.src = profileImg;
-                div.appendChild(img);
-                const p = document.createElement('p');
-                p.innerText = nick;
-                div.appendChild(p);
-                msgList.appendChild(div);
+                if (nick) {
+                    const div = document.createElement('div');
+                    div.classList.add('profile-box');
+                    const img = document.createElement('img');
+                    img.src = profileImg;
+                    div.appendChild(img);
+                    const p = document.createElement('p');
+                    p.innerText = nick;
+                    div.appendChild(p);
+                    msgList.appendChild(div);
+                }
             }
-
+            
             return `${msg}`;
             
             
@@ -335,7 +338,7 @@ post('/previous-messages')
     const maxLength = 10;
     if (arr.length) {
         const msgs = arr.slice(-maxLength);
-        addChat({ type: 0, message: `이전 메시지 복원댐 (${msgs.length})${msgs.length !== arr.length ? ' <span class="loadable" title="추가 로딩">(+' + (arr.length - msgs.length) + ')</span>' : ''}`, nick: null });
+        addChat({ type: 0, message: `이전 메시지 복원댐 (${msgs.length})${msgs.length !== arr.length ? ' loadable: ' + (arr.length - msgs.length) : ''}`, nick: null });
         msgs.forEach(message => {
             addChat({ type: message.type, profileImg: message.profileImg, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip, previous: true });
         });
