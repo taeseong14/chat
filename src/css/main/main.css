@@ -68,7 +68,7 @@ body {
 
 #chat-tab #msgForm {
     background-color: #fff;
-    height: 20%;
+    height: 100px;
     display: flex;
 }
 
