@@ -20,11 +20,10 @@ const chatScreen = document.getElementById('chatScreen');
     msgForm.style.top = chatScreen.offsetTop + chatScreen.offsetHeight - msgForm.offsetHeight + 'px';
 
     // msg viewer
-    viewMsgList.style.height = chatScreen.offsetHeight - msgForm.offsetHeight;
+    viewMsgList.style.height = chatScreen.offsetHeight - msgForm.offsetHeight + 'px';
     
     // emoji tab
     emojiTab.style.top = chatScreen.offsetTop - 250 + 'px';
-    // emojiTab.style.height = chatScreen.offsetHeight / 2 + 200 + 'px';
 })();
 
 window.addEventListener('resize', resizeDocument);
