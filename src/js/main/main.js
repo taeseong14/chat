@@ -128,7 +128,7 @@ const addChat = (message) => {
             msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z]{1,}\)/gi, m => {
                 const emoji = emojiList.find(e => e.name === m.slice(1, -1));
                 if (!emoji) return m;
-                return `<img src="/views/imgs/emoji/${emoji.path}/${emoji.name}.${emoji.type}?${Date.now()}">`;
+                return `<img src="/views/imgs/emoji/${emoji.path}/${emoji.name}.${emoji.type}${emoji.type==='webp'?'?'+Date.now():''}">`;
             });
             if (!msg.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
             
