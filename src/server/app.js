@@ -10,16 +10,17 @@ app.use(express.static(__path));
 app.get('/', (req, res) => res.sendFile(__path + '/views/main.html'));
 
 app.post('/emoji-list', (req, res) => {
-    glob('**/emoji/*', (err, files) => {
+    glob('**/emoji/*/*', (err, files) => {
         if (err) {
             console.log(err);
             res.send([]);
         } else {
             res.send(files.map(file => {
-                const filename = file.split('/').slice(-1)[0].replace('.png', '');
+                const path = file.split('/');
                 return {
-                    type: filename.includes(".") ? filename.split('.')[1] : 'png',
-                    name: filename.split('.')[0],
+                    path: path[4],
+                    type: path.pop().split(".")[1],
+                    name: path.pop().split(".")[0],
                 }
             }));
         }
