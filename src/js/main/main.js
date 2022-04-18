@@ -343,6 +343,7 @@ post('/previous-messages')
         img.title = `(${e.name})`;
         img.addEventListener('click', () => {
             txtarea.value += decodeURI(`(${e.name})`);
+            checkSendable({});
             txtarea.focus();
         });
         emojiView.appendChild(img);
