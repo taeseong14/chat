@@ -170,3 +170,16 @@ body {
     cursor: pointer;
     padding: 1px;
 }
+
+
+
+
+#help {
+    position: absolute;
+    bottom: 10px;
+    width: 99%;
+    text-align: center;
+}
+#help a {
+    color: #000;
+}

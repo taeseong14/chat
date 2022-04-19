@@ -14,3 +14,22 @@ btn && btn.addEventListener('click', () => {
     localStorage.setItem('nickname', input);
     document.querySelector('#nick').innerText = input;
 });
+
+const idBtn = document.querySelector('button[hidden]');
+if (localStorage.getItem('idChanged') !== 'true') {
+    idBtn.hidden = false;
+    idBtn.addEventListener('click', () => {
+        const input = prompt('아이디를 입력해주세요.');
+        if (input) {
+            if (input.match(/[^A-Z0-9_]/gi)) return alert('아이디는 영문자, 숫자, _만 가능합니다.');
+            if (input.length < 4 || input.length > 16) return alert('아이디는 4자 이상 16자 이하로 입력해주세요.');
+            const check = prompt(`${input}로 저장하시겠습니까?\n'예'를 입력하시면 저장됩니다.`);
+            if (check === '예') {
+                localStorage.setItem('idChanged', 'true');
+                localStorage.setItem('id', input);
+                idBtn.hidden = true;
+                document.querySelector('#id').innerText = `#${input}`;
+            }
+        }
+    });
+}

@@ -408,9 +408,8 @@ function onSignIn(googleUser) {
     
     if (localStorage.getItem('googleLogin') === null) {
         localStorage.setItem('googleLogin', 'true');
-        const id = email.split('@')[0];
-        socket.emit('setId', id);
-        localStorage.setItem('id', id);
+        if (localStoarge.getItem('idChanged') !== 'true')
+        localStorage.setItem('id', email.split('@')[0].replace(/\d/g, '').toLowerCase());
         location.reload();
     }
 }
