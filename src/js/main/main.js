@@ -212,6 +212,22 @@ const addChat = (message) => {
     viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
 
+String.prototype.setAns = function(callback) {
+    const text = this.toString();
+    socket.on('chat', msg => {
+        console.log(msg);
+        if (msg.message !== text) return;
+        const reply = String(callback());
+        socket.emit('message', { message: reply, type: 1, timestamp: Date.now(), ip });
+        addChat({
+            type: 1,
+            message: reply,
+            timestamp: Date.now(),
+            nick: null,
+        });
+    });
+}
+
 
 const nickForm = document.querySelector('form#nickForm');
 const msgForm = document.querySelector('form#msgForm');

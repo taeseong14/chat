@@ -146,6 +146,7 @@ body {
     height: 400px;
     overflow-y: scroll;
     background-color: #fff;
+    z-index: 100;
 }
 #emoji-tab > span {
     font-size: 18px;

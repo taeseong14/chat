@@ -36,6 +36,9 @@
     border-width: 0 0 1px 0;
 }
 
+.profile-box {
+    margin-top: 10px;
+}
 .profile-box img {
     width: 30px;
     height: 30px;
