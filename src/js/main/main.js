@@ -122,7 +122,7 @@ const addChat = (message) => {
             
             // 링크 하이라이트
             msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/\?\=\-\_%]+)?/gi, e => {
-                if (e.endsWith('.png')) return e;
+                if (e.includes('/views/imgs/')) return e;
                 return `<a target="blank" href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
             });
             
