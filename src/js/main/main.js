@@ -1,3 +1,5 @@
+console.log('%c버그 제보: bgh.kro.kr/chat', 'color: #000; background: #99f; font-size: 18px; padding: 3px');
+
 const socket = io();
 
 let ip;
@@ -119,7 +121,7 @@ const addChat = (message) => {
             div.classList.add(nick? 'msg-other' : 'msg-self');
             
             // 링크 하이라이트
-            msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/\?\=]+)?/gi, e => {
+            msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/\?\=\-\_%]+)?/gi, e => {
                 if (e.endsWith('.png')) return e;
                 return `<a target="blank" href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
             });
@@ -368,6 +370,7 @@ const googleLoginBtn = document.querySelector('div.g-signin2');
 const myProfile = document.querySelector('#my-profile');
 const myProfileImg = myProfile.querySelector('img');
 const myName = myProfile.querySelector('#my-name');
+localStorage.getItem('nickname') && (myName.innerHTML = localStorage.getItem('nickname'));
 
 function onSignIn(googleUser) {
     var profile = googleUser.getBasicProfile();

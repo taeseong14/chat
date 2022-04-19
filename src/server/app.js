@@ -7,6 +7,13 @@ const app = express();
 
 app.use(express.json());
 app.use(express.static(__path));
+glob('**/emoji/*', (err, files) => {
+    files.forEach(file => {
+        // app.use(`/views/imgs/emoji/${}`)
+        app.use(express.static(`${__path}/${file.split("/").slice(1).join("/")}`))
+    });
+})
+
 app.get('/', (req, res) => res.sendFile(__path + '/views/main.html'));
 
 app.post('/emoji-list', (req, res) => {
