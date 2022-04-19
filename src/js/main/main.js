@@ -26,7 +26,7 @@ get("//api.ipify.org")
 })
 
 let emojiList = []; // get emoji list before get previous messages
-const people = []; // 머였는지 까먹음
+const people = []; // 방인원 목록
 
 // 칭구 / 챗 화면 전환
 
@@ -394,6 +394,7 @@ function onSignIn(googleUser) {
     const email = profile.getEmail();
     
     console.log('[Google Logined]\nName:', profile.getName(), '\nImage URL:', pfUrl);
+    console.log(sans=profile)
     
     if (localStorage.getItem('nickname') === null) 
     localStorage.setItem('nickname', profile.getName());
@@ -459,9 +460,9 @@ if (localStorage.getItem('profileImg')) {
     socket.emit('profileImg', localStorage.getItem('profileImg'));
     myProfileImg.src = localStorage.getItem('profileImg');
 } else {
-    socket.emit('profileImg', '/views/imgs/friend.png');
-    localStorage.setItem('profileImg', '/views/imgs/friend.png');
-    myProfileImg.src = '/views/imgs/friend.png';
+    socket.emit('profileImg', '/views/imgs/default-profile.png');
+    localStorage.setItem('profileImg', '/views/imgs/default-profile.png');
+    myProfileImg.src = '/views/imgs/default-profile.png';
 }
 
 
