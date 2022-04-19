@@ -110,12 +110,17 @@ body {
     z-index: 10000;
     width: 150px;
     background-color: #aaa;
-    transform: scale(0);
-    transform-origin: top left;
+    /* transform-origin: top left; */
+    border: 1px solid;
+    border-radius: 5px;
 }
-#context-menu.active {
-    transform: scale(1);
+#context-menu {
     transition: transform 200ms ease-in-out;
+}
+#context-menu hr {
+    margin: 0;
+    border: none;
+    border-top: 1px solid;
 }
 #context-menu .item {
     padding: 8px 10px;

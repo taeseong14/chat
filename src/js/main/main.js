@@ -191,9 +191,9 @@ const addChat = (message) => {
         e.preventDefault();
         console.log(e);
         const contextElement = document.getElementById("context-menu");
-        contextElement.style.top = e.offsetY + "px";
-        contextElement.style.left = e.offsetX + "px";
-        contextElement.classList.add('active');
+        contextElement.style.top = e.y + "px";
+        contextElement.style.left = e.x + "px";
+        contextElement.hidden = false;
     });
     
     
@@ -267,7 +267,7 @@ function sendMessageEvent(e) {
     e.preventDefault();
     if (!loaded) return;
     let message = txtarea.value;
-    if (!message) return;
+    if (!message.trim() || sendButton.disabled) return;
     
     lastMsg = message;
     
@@ -297,6 +297,7 @@ function sendMessageEvent(e) {
 }
 
 msgForm.addEventListener('submit', sendMessageEvent);
+sendButton.addEventListener('click', sendMessageEvent);
 
 const checkSendable = (e) => {
     if (e.key === 'ArrowUp') {
@@ -472,12 +473,12 @@ if (localStorage.getItem('profileImg')) {
 
 window.addEventListener("click", () => {
     const contextElement = document.getElementById("context-menu");
-    contextElement.classList.remove('active');
+    contextElement.hidden = true;
 });
 
-// document.querySelector('#wa').addEventListener('click', () => {
-//     console.log('wa')
-// });
+document.querySelector('#reply').addEventListener('click', (e) => {
+    console.log('reply To: ', e.target);
+});
 
 
 
