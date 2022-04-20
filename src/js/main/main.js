@@ -99,6 +99,7 @@ const addChat = (message) => {
     let msg = message.message;
     img && console.log('이미지: ' + img);
 
+    message.previous && console.log(message);
     if (message.replyInfo) replyInfo = message.replyInfo;
 
     if (message.previous) {
@@ -126,6 +127,7 @@ const addChat = (message) => {
             
             case 1:
             div.classList.add(nick? 'msg-other' : 'msg-self');
+            if (replyInfo.msg) div.classList.add('reply');
             
             // 링크 하이라이트
             msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/\?\=\-\_%]+)?/gi, e => {
@@ -163,7 +165,7 @@ const addChat = (message) => {
 
             // 답장
             if (replyInfo.msg && replyInfo.nick) {
-                replyInfo.msg = replyInfo.msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
+                replyInfo.msg = replyInfo.msg.replace(/<[^>]+>/g, e => e.includes('/views/imgs/')?e:'');
                 replyInfo.nick = replyInfo.nick.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
             }
             
@@ -239,7 +241,7 @@ String.prototype.setAns = function(callback) {
     socket.on('chat', msg => {
         console.log(msg);
         if (msg.message !== text) return;
-        const reply = String(callback());
+        const reply = String(callback(msg));
         socket.emit('message', { message: reply, type: 1, timestamp: Date.now(), ip });
         addChat({
             type: 1,
@@ -396,7 +398,7 @@ post('/previous-messages')
         const msgs = arr.slice(-maxLength);
         addChat({ type: 0, message: `이전 메시지 복원댐 (${msgs.length})${msgs.length !== arr.length ? ' loadable: ' + (arr.length - msgs.length) : ''}`, nick: null });
         msgs.forEach(message => {
-            addChat({ type: message.type, profileImg: message.profileImg, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip, previous: true });
+            addChat({ type: message.type, profileImg: message.profileImg, message: message.message, nick: message.nick === lastNick ? null : message.nick, timestamp: message.timestamp, ip: message.ip, replyInfo: message.replyInfo, previous: true });
         });
     }
     addChat({ type: 0, message: '입장하셨어여.', nick: null });

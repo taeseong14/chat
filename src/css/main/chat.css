@@ -90,12 +90,26 @@
 p .reply-info {
     color: #555;
     font-size: 12px;
+    margin: 0 5px;
+}
+.reply-info img {
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 !important;
 }
 p hr {
     margin: 3px 0 6px 0;
     border: 0;
     border-bottom: 1px solid;
-    color: #555;
+    color: #999;
+}
+.msg-self.reply .only-emoji {
+    background-color: #FFEB33 !important;
+    padding: 0 10px !important;
+}
+.msg-other.reply .only-emoji {
+    background-color: #fff !important;
+    padding: 0 10px !important;
 }
 
 
