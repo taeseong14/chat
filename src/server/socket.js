@@ -42,14 +42,14 @@ io.on('connection', (socket) => {
     socket.join('hello');
     sockets.push(socket);
     
-    socket.on('message', ({ message, type, timestamp, ip, img }) => {
+    socket.on('message', ({ message, type, timestamp, ip, img, replyInfo }) => {
         switch(type) {
             case 0: //system message
             msgHistory.push({ type, id: socket.id_, message, nick: null, timestamp, ip });
             return socket.to('hello').emit('chat', { type, id: socket.id_, message, nick: null, timestamp, ip });
             case 1: //normal message
-            msgHistory.push({ type: 1, id: socket.id_, message, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });
-            return socket.to('hello').emit('chat', { type: 1, id: socket.id_, message, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });
+            msgHistory.push({ type: 1, id: socket.id_, message, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip, replyInfo });
+            return socket.to('hello').emit('chat', { type: 1, id: socket.id_, message, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip, replyInfo });
             case 2: //image
             msgHistory.push({ type: 2, id: socket.id_, img, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });
             return socket.to('hello').emit('chat', { type: 2, id: socket.id_, img, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });

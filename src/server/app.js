@@ -1,6 +1,7 @@
 const __path = __dirname.includes("/") ? __dirname.split("/").slice(0, -1).join("/") : __dirname.split("\\").slice(0, -1).join("\\");
 
 const glob = require('glob');
+const { get } = require('axios');
 
 const express = require('express');
 const app = express();
@@ -36,6 +37,11 @@ app.post('/emoji-list', (req, res) => {
 
 app.get('/profile', (req, res) => {
     res.sendFile(__path + '/views/profile.html');
+});
+
+app.post('/github', async (req, res) => {
+    const { data } = await get('https://github.com/taeseong14/chat/commits/main');
+    res.send(String(data));
 });
 
 module.exports = app;

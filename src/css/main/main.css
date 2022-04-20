@@ -52,11 +52,11 @@ body {
     background-color: #B2C7D9;
     height: 100%;
 }
-#tabs #chat-tab > div {
+#tabs #chat-tab #view-messages {
     height: 82%;
     overflow-y: scroll;
 }
-#tabs #chat-tab > div > div {
+#chat-tab #view-messages > div {
     padding:10px;
 }
 
@@ -109,12 +109,10 @@ body {
     position: fixed;
     z-index: 10000;
     width: 150px;
-    background-color: #aaa;
+    background-color: #fff;
     /* transform-origin: top left; */
     border: 1px solid;
-    border-radius: 5px;
-}
-#context-menu {
+    border-radius: 3px;
     transition: transform 200ms ease-in-out;
 }
 #context-menu hr {
@@ -128,7 +126,7 @@ body {
     color: #000;
 }
 #context-menu .item:hover {
-    background-color: #555
+    background-color: #ccc
 }
 
 #godown {
@@ -187,4 +185,18 @@ body {
 }
 #help a {
     color: #000;
+}
+
+#reply-to {
+    background-color: #fff;
+    position: absolute;
+    width: 332px;
+}
+#reply-to #for-padding {
+    padding: 10px;
+}
+#reply-to #for-width {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }

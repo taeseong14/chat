@@ -85,23 +85,30 @@ let lastMsgTime = {
 let lastMsg;
 let lastPerson;
 
+const lastContextMenu = {};
+
 let script = () => {};
 
 const previousMsgs = []; // 전메들 담아둔거
 let returnedPreviousMsg = false;
 
+let replyInfo = {}; // 답장정보
+
 const addChat = (message) => {
     const { type, id, nick, profileImg, timestamp, img } = message;
     let msg = message.message;
     img && console.log('이미지: ' + img);
+
+    if (message.replyInfo) replyInfo = message.replyInfo;
+
     if (message.previous) {
         previousMsgs.push(message);
         if (!returnedPreviousMsg) {
             returnedPreviousMsg = true;
             console.log('[!] 전메 복원댐: previousMsgs로 확인');
         }
-    }
-    else console.log(`[${type}] ${nick || (type ? '너님' : 'System') }: ${msg} - ${timestamp}${message.ip ? ` { ${message.ip} }` : ''}`);
+    } else console.log(`[${type}] ${nick || (type ? '너님' : 'System') }: ${msg} - ${timestamp}${message.ip ? ` { ${message.ip} }` : ''}`);
+
     const time = new Date(timestamp);
     const div = document.createElement('div');
     const p = document.createElement('p');
@@ -153,6 +160,12 @@ const addChat = (message) => {
                     msgList.appendChild(div);
                 }
             }
+
+            // 답장
+            if (replyInfo.msg && replyInfo.nick) {
+                replyInfo.msg = replyInfo.msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
+                replyInfo.nick = replyInfo.nick.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
+            }
             
             return `${msg}`;
             
@@ -167,21 +180,28 @@ const addChat = (message) => {
     })();
     
     
+    // reply
+    if (type === 1 && replyInfo.msg && replyInfo.nick) {
+        p.innerHTML = `<span class="reply-info">${replyInfo.nick}: ${replyInfo.msg}</span><hr>${p.innerHTML}`;
+        delete replyInfo.msg;
+        delete replyInfo.nick;
+    }
     
+    // 시간
     const timeFormat = `${time.getHours()}:${time.getMinutes()}`;
     
     if (type !== 0 && (timeFormat !== lastMsgTime.time || nick !== lastMsgTime.nick)) { //add timestamp
-        const parentSpan = document.createElement('span');
+        const timeSpan = document.createElement('span');
         const span = document.createElement('span');
         span.innerText = timeFormat;
         lastMsgTime.time = timeFormat;
         lastMsgTime.nick = nick;
-        parentSpan.appendChild(span);
+        timeSpan.appendChild(span);
         if (nick) {
             div.appendChild(p);
-            div.appendChild(parentSpan);
+            div.appendChild(timeSpan);
         } else {
-            div.appendChild(parentSpan);
+            div.appendChild(timeSpan);
             div.appendChild(p);
         }
     } else div.appendChild(p);
@@ -189,11 +209,12 @@ const addChat = (message) => {
     // add context menu
     p.addEventListener("contextmenu", (e) => {
         e.preventDefault();
-        console.log(e);
         const contextElement = document.getElementById("context-menu");
         contextElement.style.top = e.y + "px";
         contextElement.style.left = e.x + "px";
         contextElement.hidden = false;
+        lastContextMenu.nick = nick;
+        lastContextMenu.message = msg.replace(/<br>/g, ' ');
     });
     
     
@@ -268,6 +289,8 @@ function sendMessageEvent(e) {
     if (!loaded) return;
     let message = txtarea.value;
     if (!message.trim() || sendButton.disabled) return;
+
+    replyTo.hidden = true;
     
     lastMsg = message;
     
@@ -285,7 +308,7 @@ function sendMessageEvent(e) {
     });
     
     
-    socket.emit('message', { message, type: 1, timestamp: Date.now(), ip });
+    socket.emit('message', { message, type: 1, timestamp: Date.now(), ip, replyInfo });
     addChat({
         type: 1,
         message: message,
@@ -395,7 +418,6 @@ function onSignIn(googleUser) {
     const email = profile.getEmail();
     
     console.log('[Google Logined]\nName:', profile.getName(), '\nImage URL:', pfUrl);
-    console.log(sans=profile)
     
     if (localStorage.getItem('nickname') === null) 
     localStorage.setItem('nickname', profile.getName());
@@ -474,10 +496,36 @@ if (localStorage.getItem('profileImg')) {
 window.addEventListener("click", () => {
     const contextElement = document.getElementById("context-menu");
     contextElement.hidden = true;
+    resizeDocument();
 });
 
+// copy
+document.querySelector('#copy').addEventListener('click', (e) => {
+    console.log('lastContextMenu', lastContextMenu);
+    const textarea = document.createElement('textarea');
+    document.body.appendChild(textarea);
+    textarea.value = lastContextMenu.message;
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+    console.log('copied');
+});
+
+// delete
+document.querySelector('#del').addEventListener('click', (e) => {
+    console.log('어절저절샌즈티비~');
+});
+
+// reply
+const replyTo = document.querySelector('#reply-to');
+const replyToNick = document.querySelector('#reply-to-nick');
+const replyToMsg = document.querySelector('#reply-to-msg');
+
 document.querySelector('#reply').addEventListener('click', (e) => {
-    console.log('reply To: ', e.target);
+    console.log('lastContextMenu', lastContextMenu);
+    replyToNick.innerText = replyInfo.nick = (lastContextMenu.nick || '나님') + '에게 답장';
+    replyToMsg.innerText = replyInfo.msg = lastContextMenu.message;
+    replyTo.hidden = false;
 });
 
 
