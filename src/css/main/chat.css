@@ -112,6 +112,10 @@ p hr {
     padding: 0 10px !important;
 }
 
+#quit {
+    cursor: pointer;
+}
+
 
 /* type 2: image */
 

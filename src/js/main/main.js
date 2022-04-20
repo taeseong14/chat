@@ -534,7 +534,10 @@ document.querySelector('#reply').addEventListener('click', (e) => {
     });
     replyTo.hidden = false;
 });
-
+document.querySelector('#quit').addEventListener('click', (e) => {
+    replyInfo = {};
+    replyTo.hidden = true;
+});
 
 
 
