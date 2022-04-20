@@ -5,7 +5,7 @@ const app = require('./app');
 const server = http.createServer(app);
 const io = socketio(server);
 
-const msgHistory = [];
+let msgHistory = [];
 
 app.post('/previous-messages', (req, res) => { // get previous messages
     res.send(msgHistory);
@@ -49,6 +49,7 @@ io.on('connection', (socket) => {
             return socket.to('hello').emit('chat', { type, id: socket.id_, message, nick: null, timestamp, ip });
             case 1: //normal message
             msgHistory.push({ type: 1, id: socket.id_, message, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip, replyInfo });
+            if (msgHistory.length > 1000) msgHistory = msgHistory.slice(-900);
             return socket.to('hello').emit('chat', { type: 1, id: socket.id_, message, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip, replyInfo });
             case 2: //image
             msgHistory.push({ type: 2, id: socket.id_, img, nick: socket.nick, profileImg: socket.profileImg, timestamp, ip });
