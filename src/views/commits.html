@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:description" content="Chat">
+    <link rel="icon" type="image/x-icon" href="/views/imgs/favicon.ico">
+    <title>Commit List</title>
+</head>
+<body>
+    <h1>Commit List</h1>
+    <div id="content"></div>
+
+    <script src="/js/module/fetch.js"></script>
+    <script>
+        const content = document.querySelector('#content');
+
+        get('https://api.github.com/repos/taeseong14/chat/commits', 'json')
+        .then(arr => {
+            arr.forEach(e => {
+                const div = document.createElement('div');
+                const span = document.createElement('span');
+                const d = new Date(e.commit.committer.date);
+                function pad(n) {
+                    return n.toString().padStart(2, '0');
+                }
+                span.innerHTML = `[${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}] `;
+                div.appendChild(span);
+                const a = document.createElement('a');
+                a.target = '_blank';
+                a.href = `https://github.com/taeseong14/chat/commit/${e.sha}`;
+                a.innerText = e.commit.message;
+                div.appendChild(a);
+                content.appendChild(div);
+            });
+        });
+    </script>
+    
+    <style>
+        a {
+            text-decoration: none;
+            color: black;
+            /* margin-left: 10px; */
+        }
+    </style>
+</body>
+</html>

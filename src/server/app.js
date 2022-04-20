@@ -39,9 +39,8 @@ app.get('/profile', (req, res) => {
     res.sendFile(__path + '/views/profile.html');
 });
 
-app.post('/github', async (req, res) => {
-    const { data } = await get('https://github.com/taeseong14/chat/commits/main');
-    res.send(String(data));
+app.get('/commits', async (req, res) => {
+    res.sendFile(__path + '/views/commits.html');
 });
 
 module.exports = app;

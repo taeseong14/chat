@@ -233,6 +233,7 @@ const addChat = (message) => {
     viewMsgList.scrollTop = viewMsgList.scrollHeight;
 }
 
+// 봇만들기!
 String.prototype.setAns = function(callback) {
     const text = this.toString();
     socket.on('chat', msg => {
@@ -638,7 +639,5 @@ addFriendTab.querySelector('#add-friend-tab-title > span:last-child').addEventLi
 
 
 
-// friendBtn.click();
-// addFriendBtn.click();
 
 txtarea.focus();
