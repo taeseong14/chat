@@ -637,7 +637,26 @@ addFriendTab.querySelector('#add-friend-tab-title > span:last-child').addEventLi
 });
 
 
-
-
-
 txtarea.focus();
+
+
+// commit list
+const commitTime = document.querySelector('#commit-time');
+get('https://api.github.com/repos/taeseong14/chat/commits', 'json')
+.then(arr => {
+    let time = (Date.now() - new Date(arr[0].commit.committer.date)); // milisec
+    time = time/1000/60; // min
+    if (time < 60) {
+        return commitTime.innerText = `[${Math.floor(time)}분 전]`;
+    }
+    time = time / 60; // hour
+    time = time.toFixed(1);
+    commitTime.innerText = `[${time}시간 전]`;
+});
+
+// opened issues
+const issues = document.querySelector('#issues');
+get('https://api.github.com/repos/taeseong14/chat/issues', 'json')
+.then(arr => {
+    if (arr.length) issues.innerText = ` (${arr.length})`;
+});
