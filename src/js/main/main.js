@@ -393,7 +393,7 @@ post('/previous-messages')
         });
         emojiView.appendChild(img);
     }); // add emoji tab
-    const maxLength = 10;
+    const maxLength = 100;
     if (arr.length) {
         const msgs = arr.slice(-maxLength);
         addChat({ type: 0, message: `이전 메시지 복원댐 (${msgs.length})${msgs.length !== arr.length ? ' loadable: ' + (arr.length - msgs.length) : ''}`, nick: null });
