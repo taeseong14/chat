@@ -58,7 +58,7 @@ body {
     overflow-y: scroll;
 }
 #chat-tab #view-messages > div {
-    padding:10px;
+    padding: 10px 5px 5px 10px;
 }
 
 #chat-tab #msgForm {
@@ -201,4 +201,19 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-between;
+}
+
+/* scroll bar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: none;
+}
+::-webkit-scrollbar-thumb {
+    background: #999;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #888;
 }

@@ -28,7 +28,7 @@ const chatScreen = document.getElementById('chatScreen');
     emojiTab.style.top = chatScreen.offsetTop - 250 + 'px';
 
     // scroll
-    viewMsgList.scrollTop = viewMsgList.scrollHeight;
+    // viewMsgList.scrollTop = viewMsgList.scrollHeight;
 })();
 
 window.addEventListener('resize', resizeDocument);
