@@ -99,7 +99,6 @@ const addChat = (message) => {
     let msg = message.message;
     img && console.log('이미지: ' + img);
     
-    message.previous && console.log(message);
     if (message.replyInfo) replyInfo = message.replyInfo;
     
     if (message.previous) {
@@ -215,7 +214,7 @@ const addChat = (message) => {
         contextElement.style.top = e.y + "px";
         contextElement.style.left = e.x + "px";
         contextElement.hidden = false;
-        lastContextMenu.nick = type === 0? 'system' : (nick || '나님');
+        lastContextMenu.nick = type === 0? 'system' : (nick || '자신');
         lastContextMenu.message = msg.replace(/<br>/g, ' ');
     });
     
@@ -242,12 +241,13 @@ String.prototype.setAns = function(callback) {
         console.log(msg);
         if (msg.message !== text) return;
         const reply = String(callback(msg));
-        socket.emit('message', { message: reply, type: 1, timestamp: Date.now(), ip });
+        socket.emit('message', { message: reply, type: 1, timestamp: Date.now(), ip, replyInfo: this.replyInfo });
         addChat({
             type: 1,
             message: reply,
             timestamp: Date.now(),
             nick: null,
+            replyInfo: this.replyInfo
         });
     });
 }
