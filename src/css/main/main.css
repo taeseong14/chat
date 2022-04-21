@@ -80,8 +80,8 @@ body {
     margin: 5px auto 0 auto;
     resize: none;
     font-size: 14px;
-    font-family: sans-serif;
-    /* border: 1px solid; */
+    font-family: 'Fira code script=latin rev=1';
+    -webkit-font-smoothing: antialiased;
 }
 #msgForm textarea:focus {
     outline: none;

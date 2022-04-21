@@ -426,9 +426,6 @@ function onSignIn(googleUser) {
     localStorage.setItem('nickname', profile.getName());
     myName.innerText = localStorage.getItem('nickname');
     
-    localStorage.setItem('profileImg', pfUrl);
-    myProfileImg.src = localStorage.getItem('profileImg');
-    socket.emit('profileImg', localStorage.getItem('profileImg'));
     
     googleLoginBtn.hidden = true;
     
@@ -436,6 +433,9 @@ function onSignIn(googleUser) {
         localStorage.setItem('googleLogin', 'true');
         if (localStoarge.getItem('idChanged') !== 'true')
         localStorage.setItem('id', email.split('@')[0].replace(/\d/g, '').toLowerCase());
+        localStorage.setItem('profileImg', pfUrl);
+        myProfileImg.src = localStorage.getItem('profileImg');
+        socket.emit('profileImg', localStorage.getItem('profileImg'));
         location.reload();
     }
 }
