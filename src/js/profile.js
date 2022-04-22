@@ -12,6 +12,7 @@ btn && btn.addEventListener('click', () => {
     if (!input) return;
     if (input.length > 20) return alert('닉네임은 20자 이내로 입력해주세요.');
     if (input.includes('<') || input.includes('>')) return alert('<> 특수문자는 사용할 수 없습니다.');
+    if (input.includes('\n')) return alert('줄바꿈 특수문자는 사용할 수 없습니다.');
     localStorage.setItem('nickname', input);
     document.querySelector('#nick').innerText = input;
 });
