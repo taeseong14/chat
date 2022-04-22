@@ -114,7 +114,7 @@ const addChat = (message) => {
     const p = document.createElement('p');
     p.innerHTML = (function(){
         msg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
-        msg = msg.replace(/\n/g, '<br>').replace(/\n +/g, e=>e.replace(/ /g,"&nbsp")); // 줄바꿈
+        msg = msg.replace(/\n +/g, e=>e.replace(/ /g,"&nbsp")).replace(/\n/g, '<br>'); // 줄바꿈
         
         switch(type) {
             case 0:
