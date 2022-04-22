@@ -359,6 +359,7 @@ socket.on('disconnect', () => {
     location.reload();
 });
 
+socket.on('err', err => alert(err));
 
 // emoji 관련
 

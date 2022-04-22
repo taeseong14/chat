@@ -43,6 +43,10 @@ io.on('connection', (socket) => {
     sockets.push(socket);
     
     socket.on('message', ({ message, type, timestamp, ip, img, replyInfo }) => {
+
+        // 이상한애들 잡기
+        if (socket.nick.length > 20) return socket.emit('err', '닉네임은 20자 이내로 입력해주세요.');
+
         switch(type) {
             case 0: //system message
             msgHistory.push({ type, id: socket.id_, message, nick: null, timestamp, ip });
