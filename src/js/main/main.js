@@ -131,16 +131,18 @@ const addChat = (message) => {
             // 링크 하이라이트
             msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/\?\=\-\_%]+)?/gi, e => {
                 if (e.includes('/views/imgs/')) return e;
+                if (e.includes('emot')) return e;
                 return `<a target="blank" href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
             });
-            
+
             // 이모지 표현
-            msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z]{1,}\)/gi, m => {
+            msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z\.]{1,}\)/gi, m => {
                 const emoji = emojiList.find(e => e.name === m.slice(1, -1));
-                if (!emoji) return m;
+                // if (!emoji) return m;
                 return `<img src="/views/imgs/emoji/${emoji.path}/${emoji.name}.${emoji.type}${emoji.type==='webp'?'?'+Date.now():''}">`;
             });
             if (!msg.replace(/<img src=[^>]+>/, '')) p.classList.add('only-emoji');
+            
             
             // id 하이라이트
             msg = msg.replace(/(#[A-Z0-9_]{6,20})/gi, e => {

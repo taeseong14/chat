@@ -25,10 +25,11 @@ app.post('/emoji-list', (req, res) => {
         } else {
             res.send(files.map(file => {
                 const path = file.split('/');
+                const index = path.indexOf('emoji');
                 return {
-                    path: path[4],
-                    type: path[5].split(".")[1],
-                    name: path[5].split(".")[0],
+                    path: path[index + 1],
+                    type: path[index + 2].split(".").pop(),
+                    name: path[index + 2].split(".").slice(0, -1).join("."),
                 };
             }));
         }
