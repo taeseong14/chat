@@ -183,10 +183,11 @@ body {
     bottom: 10px;
     width: 98%;
     text-align: center;
+    font-size: 14px;
+    color: #fff;
 }
 #help a {
-    color: #000;
-    margin: 0 10px;
+    margin: 0 7px;
 }
 
 #reply-to {
