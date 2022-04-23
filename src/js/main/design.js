@@ -29,6 +29,11 @@ const chatScreen = document.getElementById('chatScreen');
 
     // scroll
     // viewMsgList.scrollTop = viewMsgList.scrollHeight;
-})();
 
-window.addEventListener('resize', resizeDocument);
+    // commit-tab
+    commitTab.style.left = commitList.offsetLeft + (commitList.offsetWidth/2) + 12 + 'px';
+})(); // 실행1
+
+setTimeout(resizeDocument, 500); // 실행2
+
+window.addEventListener('resize', resizeDocument); // 실행3(?)

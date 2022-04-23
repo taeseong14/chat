@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-
+    
     <!-- google login -->
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="303578995366-k5s7056t1094rev0jh5ctb3s4cvptbhh.apps.googleusercontent.com">
@@ -123,8 +123,13 @@
             <a href="https://github.com/taeseong14/chat/issues/new" target="_blank">Bug Report<span id="issues"></span></a>
         </span>
         <span>
-            <a href="/commits" target="_blank">Commit List <span id="commit-time">[0시간 전]</span></a>
+            <span href="/commits" target="_blank">Commit List <span id="commit-time">[0시간 전]</span></span>
         </span>
+    </div>
+    <div id="commit-tab" hidden>
+        <span id="commit-tab-title">Commits in 48h <span id="commits-48">(0)</span></span>
+        <hr>
+        <div id="commit-tab-items"></div>
     </div>
     
     <div id="context-menu" hidden>

@@ -185,9 +185,35 @@ body {
     text-align: center;
     font-size: 14px;
 }
-#help a {
+#help a, #help > span > span {
     margin: 0 7px;
     color: #777;
+    border-bottom: 1px solid;
+    cursor: pointer;
+}
+#commit-tab {
+    position: absolute;
+    top: 680px;
+    left: 0;
+    transform: translate(-50%, -100%);
+    width: 190px;
+    height: 80px;
+    background-color: #fff;
+    border-radius: 5px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    z-index: 100;
+    font-size: 12px;
+    font-family: sans-serif;
+    padding: 10px;
+}
+#commit-tab-items hr {
+    margin: 2px 0;
+    border: none;
+    border-top: 1px solid #aaa;
+}
+#commit-tab-items hr:last-child {
+    display: none;
 }
 
 #reply-to {

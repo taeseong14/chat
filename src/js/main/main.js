@@ -3,7 +3,7 @@ console.log('%c버그 제보: bgh.kro.kr/chat', 'color: #000; background: #99f; 
 const socket = io();
 
 let ip;
-const banned_user = ["8.38.149.6", "175.223.19.142"];
+const banned_user = ['8.38.149.6', '175.223.19.142'];
 if (localStorage.getItem('banned') === 'true') {
     document.body.hidden = true;
     setTimeout(() => {
@@ -11,10 +11,10 @@ if (localStorage.getItem('banned') === 'true') {
         location.href = '//ck.b-p.kro.kr/';
     }, 10);
 }
-get("//api.ipify.org")
+get('//api.ipify.org')
 .then(res => ip = res)
 .then(() => {
-    socket.emit("ip", ip);
+    socket.emit('ip', ip);
     if (banned_user.includes(ip)) {
         document.body.hidden = true;
         setTimeout(() => {
@@ -114,11 +114,11 @@ const addChat = (message) => {
     const p = document.createElement('p');
     p.innerHTML = (function(){
         msg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;'); // 태그 제거
-        msg = msg.replace(/\n +/g, e=>e.replace(/ /g,"&nbsp;")).replace(/\n/g, '<br>'); // 줄바꿈
+        msg = msg.replace(/\n +/g, e=>e.replace(/ /g,'&nbsp;')).replace(/\n/g, '<br>'); // 줄바꿈
         
         switch(type) {
             case 0:
-            if (!loaded) msg = msg.replace(/loadable: \d+/, e=>`<span class="loadable" title="추가 로딩">(+${e.split(" ")[1]})</span>`);
+            if (!loaded) msg = msg.replace(/loadable: \d+/, e=>`<span class="loadable" title="추가 로딩">(+${e.split(' ')[1]})</span>`);
             div.classList.add('system');
             if (msg.endsWith('입장하였습니다.')) people.push(id);
             lastPerson = null;
@@ -132,9 +132,9 @@ const addChat = (message) => {
             msg = msg.replace(/(https?:(\/\/)?)?[A-Z0-9가-힣\.\-]+\.[A-Z0-9가-힣]{1,4}(\/[A-Z0-9가-힣\.\/\?\=\-\_%]+)?/gi, e => {
                 if (e.includes('/views/imgs/')) return e;
                 if (e.includes('emot')) return e;
-                return `<a target="blank" href="${e.startsWith("http")?e:"//"+e}">${e}</a>`;
+                return `<a target="blank" href="${e.startsWith('http')?e:'//'+e}">${e}</a>`;
             });
-
+            
             // 이모지 표현
             msg = msg.replace(/\([가-힣ㄱ-ㅎㅏ-ㅣ0-9_A-Z\.]{1,}\)/gi, m => {
                 const emoji = emojiList.find(e => e.name === m.slice(1, -1));
@@ -210,11 +210,11 @@ const addChat = (message) => {
     } else div.appendChild(p);
     
     // add context menu
-    p.addEventListener("contextmenu", (e) => {
+    p.addEventListener('contextmenu', (e) => {
         e.preventDefault();
-        const contextElement = document.getElementById("context-menu");
-        contextElement.style.top = e.y + "px";
-        contextElement.style.left = e.x + "px";
+        const contextElement = document.getElementById('context-menu');
+        contextElement.style.top = e.y + 'px';
+        contextElement.style.left = e.x + 'px';
         contextElement.hidden = false;
         lastContextMenu.nick = type === 0? 'system' : (nick || '자신');
         lastContextMenu.message = msg.replace(/<br>/g, ' ');
@@ -228,7 +228,7 @@ const addChat = (message) => {
     if (emojis.length && type === 1 && p.innerHTML.includes('<img src=')) {
         const emoji = Array.from(emojis)[0];
         emoji.addEventListener('click', () => {
-            emoji.src = emoji.src.split("?")[0] + "?" + Date.now();
+            emoji.src = emoji.src.split('?')[0] + '?' + Date.now();
         });
     }
     
@@ -499,8 +499,8 @@ if (localStorage.getItem('profileImg')) {
 
 // context menu
 
-window.addEventListener("click", () => {
-    const contextElement = document.getElementById("context-menu");
+window.addEventListener('click', () => {
+    const contextElement = document.getElementById('context-menu');
     contextElement.hidden = true;
     resizeDocument();
 });
@@ -654,16 +654,50 @@ txtarea.focus();
 
 // commit list
 const commitTime = document.querySelector('#commit-time');
+const commitList = commitTime.parentElement;
+const commitTab = document.querySelector('#commit-tab');
+const commits = commitTab.querySelector('#commit-tab-items');
+const commitTitle = commitTab.querySelector('#commit-tab-title');
 get('https://api.github.com/repos/taeseong14/chat/commits', 'json')
 .then(arr => {
     let time = (Date.now() - new Date(arr[0].commit.committer.date)); // milisec
-    time = time/1000/60; // min
-    if (time < 60) {
-        return commitTime.innerText = `[${Math.floor(time)}분 전]`;
-    }
-    time = time / 60; // hour
-    time = time.toFixed(1);
-    commitTime.innerText = `[${time}시간 전]`;
+    time = (time/1000/60).toFixed(1); // min
+    commitTime.innerText = `[${time>60?(time/60).toFixed(1)+'h':time} 전]`;
+    
+    commits.innerHTML = '';
+    let commitCount = 0;
+    document.querySelector('#commits-48').innerText = `(${arr.length})`;
+    arr.forEach((commit, index) => {
+        const commitElement = document.createElement('div');
+        let time = (Date.now() - new Date(commit.commit.committer.date)); // milisec
+        time = time/1000/60; // min
+        if (time > 60*48) return;
+        commitCount++;
+        time = time.toFixed(1);
+        commitElement.innerHTML = `${commit.commit.message}`;
+        commits.appendChild(commitElement);
+        commits.appendChild(document.createElement('hr'));
+    });
+});
+let commitTabTimeout = 0;
+commitList.addEventListener('mouseover', () => {
+    clearTimeout(commitTabTimeout);
+    commitTab.hidden = false;
+});
+commitList.addEventListener('mouseout', () => {
+    commitTabTimeout = setTimeout(() => {
+        commitTab.hidden = true;
+    }, 500);
+});
+commitTab.addEventListener('mouseover', () => {
+    clearTimeout(commitTabTimeout);
+    commitTab.hidden = false;
+});
+commitTab.addEventListener('mouseout', () => {
+    commitTab.hidden = true;
+});
+commitList.addEventListener('click', () => {
+    open('/commits');
 });
 
 // opened issues
