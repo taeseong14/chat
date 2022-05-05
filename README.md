@@ -1,4 +1,4 @@
-# CHAT
+# [DEPRECATED] CHAT
 
 바불챗
 
