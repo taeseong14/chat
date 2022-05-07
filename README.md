@@ -2,8 +2,6 @@
 
 바불챗
 
-[link](https://app.kiri.fun)
-
 ---
 
 ## tooodooo
